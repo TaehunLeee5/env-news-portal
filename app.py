@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 import sys
 
 app = Flask(__name__)
+app.secret_key = b'placeholderkey'
 
 @app.route('/')
 def home():
@@ -9,10 +10,10 @@ def home():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    print(request.method, flush=True)
     if request.method == "POST":
-        print(request.form["password"], flush=True)
-        print(request.form["name"], flush=True)
+        #TODO: register account (send to database, serverside validation, etc.)
+
+        flash("Account registration successful. You may log in.") #placeholder feedback
     return render_template('signup.html')
 
 @app.route('/login')

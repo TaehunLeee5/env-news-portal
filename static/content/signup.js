@@ -1,4 +1,5 @@
 
+
 function validateName(name) {
     var errorMsg = "";
 
@@ -32,11 +33,10 @@ function validatePassword(pw) {
     if (pw.search("[A-Z]+") == -1)
         errorMsg =  errorMsg.concat("Your password must contain at least 1 uppercase letter.");
 
-    console.log(errorMsg);
     return errorMsg;
 }
 
-function signup() {
+function validateSignupForm() {
     var nameInput = document.forms.signupForm.name;
     var name = nameInput.value;
     var emailInput = document.forms.signupForm.email;
@@ -50,4 +50,10 @@ function signup() {
     emailInput.reportValidity();
     nameInput.setCustomValidity(validateName(name));
     nameInput.reportValidity();
+
+    return nameInput.checkValidity() && emailInput.checkValidity() && pwInput.checkValidity();
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    window.history.replaceState(null, null, window.location.href);
+});
