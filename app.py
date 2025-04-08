@@ -12,13 +12,14 @@ def home():
 def signup():
     if request.method == "POST":
         #TODO: register account (send to database, serverside validation, etc.)
-
         flash("Account registration successful. You may log in.") #placeholder feedback
     return render_template('signup.html')
 
-@app.route('/login')
+@app.route('/login', methods = ['POST'])
 def login():
-    return "<h2>Login Page</h2><p>Login form will go here.</p>"
+    #if request.method == "POST":
+        #TODO: login (database lookup, create session, etc.)
+    return render_template('login.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
