@@ -1,24 +1,53 @@
 
-function validatePassword() {
-    var pwInput = document.getElementById("password")
-    var pw = pwInput.value;
+function validateName(name) {
+    var errorMsg = "";
 
-    pwInput.setCustomValidity("");
+    //TODO: provide more detailed error feedback
+    if (!name.match(/^[\w\-\s]+$/))
+        errorMsg = errorMsg.concat("The name provided is invalid");
 
-    if (pw.length < 6)
-        pwInput.setCustomValidity("Your password must contain at least 6 characters.");
-    if (pw.length > 20)
-        pwInput.setCustomValidity("Your password must contain at most 20 characters.");
-    if (pw.search("[*@!#%&()$^~{}]+") == -1)
-        pwInput.setCustomValidity("Your password must contain at least 1 special character.");
-    if (pw.search("[0-9]+") == -1)
-        pwInput.setCustomValidity("Your password must contain at least 1 digit");
-    if (pw.search("[A-Z]+") == -1)
-        pwInput.setCustomValidity("Your password must contain at least 1 uppercase letter.");
+    return errorMsg;
+}
+function validateEmail(email) {
+    var errorMsg = "";
+    
+    //TODO: provide more detailed error feedback
+    if (!email.toLowerCase().match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) 
+        errorMsg = errorMsg.concat("The email provided is invalid.");
 
-    pwInput.reportValidity();
+    return errorMsg;
 }
 
-function signup(form) {
-    validatePassword();
+function validatePassword(pw) {
+    var errorMsg = "";
+
+    if (pw.length < 6)
+        errorMsg = errorMsg.concat("Your password must contain at least 6 characters.\n");
+    if (pw.length > 20)
+        errorMsg = errorMsg.concat("Your password must contain at most 20 characters.\n");
+    if (pw.search("[*@!#%&()$^~{}]+") == -1)
+        errorMsg = errorMsg.concat("Your password must contain at least 1 special character.\n");
+    if (pw.search("[0-9]+") == -1)
+        errorMsg = errorMsg.concat("Your password must contain at least 1 digit\n");
+    if (pw.search("[A-Z]+") == -1)
+        errorMsg =  errorMsg.concat("Your password must contain at least 1 uppercase letter.");
+
+    console.log(errorMsg);
+    return errorMsg;
+}
+
+function signup() {
+    var nameInput = document.forms.signupForm.name;
+    var name = nameInput.value;
+    var emailInput = document.forms.signupForm.email;
+    var email = emailInput.value;
+    var pwInput = document.forms.signupForm.password;
+    var pw = pwInput.value;
+    
+    pwInput.setCustomValidity(validatePassword(pw));
+    pwInput.reportValidity();
+    emailInput.setCustomValidity(validateEmail(email));
+    emailInput.reportValidity();
+    nameInput.setCustomValidity(validateName(name));
+    nameInput.reportValidity();
 }
