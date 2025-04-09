@@ -28,11 +28,11 @@ def signup():
         confirm_password = request.form.get('confirm_password')
 
         if password != confirm_password:
-            flash("Passwords do not match. Please try again.", "error")
+            flash("Passwords do not match. Please try again.", "flash-error")
             return render_template('signup.html')
 
         # Here, you'd typically save the user to a database
-        flash("Sign up successful! Please log in.", "success")
+        flash("Sign up successful! Please log in.", "flash-success")
         return redirect(url_for('login'))
 
     return render_template('signup.html')
@@ -46,10 +46,10 @@ def login():
         if email == dummy_user['email'] and password == dummy_user['password']:
             session['user_id'] = email
             session['user_name'] = dummy_user['name']
-            flash("Logged in successfully!", "success")
+            flash("Logged in successfully!", "flash-success")
             return redirect(url_for('home'))
         else:
-            flash("Invalid email or password.", "error")
+            flash("Invalid email or password.", "flash-error")
 
     return render_template('login.html')
 
@@ -60,7 +60,7 @@ def login_google():
 @app.route('/logout')
 def logout():
     session.clear()
-    flash("You have been logged out.", "success")
+    flash("You have been logged out.", "flash-success")
     return redirect(url_for('login'))
 
 @app.route('/post_article')
