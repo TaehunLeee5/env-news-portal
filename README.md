@@ -54,7 +54,7 @@ A web application for sharing and accessing environmental news articles. This po
 
 2. Open your web browser and navigate to:
    ```
-   http://localhost:5001
+   http://localhost:5000
    ```
 
 ## Usage
@@ -104,13 +104,3 @@ env-news-portal/
 - Search functionality
 - Comment system
 - Social media sharing
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Flask documentation
-- Bootstrap framework
-- Environmental news sources
