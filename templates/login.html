@@ -4,16 +4,6 @@
 <div class="auth-container">
     <h2>Log In</h2>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class="flashes">
-          {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-
     <form method="POST" action="{{ url_for('login') }}">
         <div class="form-group">
             <label for="email">Email Address</label>
@@ -34,6 +24,6 @@
         <h4>Or log in with:</h4>
         <a href="{{ url_for('login_google') }}" class="google-btn">Continue with Google</a>
     </div>
-    -->
+    
 </div>
 {% endblock %}
