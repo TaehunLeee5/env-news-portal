@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+
 import requests #used for external API calls; this is different from flask.request
+import weather_service
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this in production!
-
-openWeatherAPIKey = '4262365db106dd47e4e7bf882df6d6ec' 
 
 # Dummy user data (you can replace with a real database)
 dummy_user = {
@@ -73,26 +73,9 @@ def post_article():
 @app.route('/map_test', methods=['GET', 'POST'])
 def map_test():
     if request.method == 'POST':
-        data = {}
         lat = request.form.get('lat')
         lon = request.form.get('lon')
-        locInfo = requests.get("https://api.weather.gov/points/" + lat + "," + lon)
-        if locInfo.ok:
-            locInfo = locInfo.json()
-            data['city'] = locInfo['properties']['relativeLocation']['properties']['city']
-            data['state'] = locInfo['properties']['relativeLocation']['properties']['state']
-            weatherInfo = requests.get(locInfo['properties']['forecast'])
-            if weatherInfo.ok:
-                weatherInfo = weatherInfo.json()
-                data['temp'] = weatherInfo['properties']['periods'][0]['temperature']
-        
-        #will be replaced with AirNow API
-        aqInfo = requests.get("http://api.openweathermap.org/data/2.5/air_pollution?lat=" + lat + "&lon=" + lon + "&appid=" + openWeatherAPIKey)
-        if aqInfo.ok:
-            print(aqInfo, flush=True)
-            aqInfo = aqInfo.json()
-            data['aqi'] = aqInfo['list'][0]['main']['aqi']
-        return data
+        return weather_service.getWeatherData(lat, lon)
     
     return render_template('map_test.html')
 

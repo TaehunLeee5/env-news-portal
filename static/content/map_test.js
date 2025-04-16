@@ -16,7 +16,7 @@ navigator.geolocation.getCurrentPosition(
 
         //create a marker and label at location
         var marker = L.marker([lat,lng]).addTo(map);
-        marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+        marker.bindPopup("<b>You are here!</b><br> Latitude:" + lat + ", Longitude:" + lng).openPopup();
 
         var popup = L.popup();
         function onMapClick(e) {
@@ -28,10 +28,21 @@ navigator.geolocation.getCurrentPosition(
 
         map.on('click', onMapClick);
 
-        getData(lat, lng); //get weather data from weather.gov
+        //get weather data from weather.gov
+        getData(lat, lng).then(function(data) {
+          document.getElementById('weatherInfo').innerHTML = "The temperature in " + data.city + ", " + data.state + ", is " + data.temperature + "\u00B0F<br />"
+          + data.city + "'s Air Quality Index is " + data.aqi; 
+          console.log(data);
 
+          var polyCoords = []
+          for (const pos of data.geometry.coordinates[0])
+            polyCoords.push([pos[1], pos[0]])
+
+          console.log(polyCoords);
+          var polygon = L.polygon(polyCoords).addTo(map);
+        polygon.bindPopup(data.city); //polygon region label
+        });
         /*
-
         //draw a circular region
         var circle = L.circle([37.327, -121.8853], {
             color: 'red',
@@ -47,7 +58,6 @@ navigator.geolocation.getCurrentPosition(
             [37.3588, -121.8873]
         ]).addTo(map);
         circle.bindPopup("I am a circle."); //circle region label
-        polygon.bindPopup("I am a polygon."); //polygon region label
         */
     },
     (error) => {
@@ -65,10 +75,9 @@ async function getData(lat, lon) {
         document.getElementById("weatherInfo").innerHTML = "Failed to get weather data"
         throw new Error(`Failed to obtain weather data: ${response.status}`);
       }
-      const data = await response.json()
-      document.getElementById('weatherInfo').innerHTML = "The temperature in " + data.city + ", " + data.state + ", is " + data.temp + "\u00B0F<br />"
-        + data.city + "'s Air Quality Index is " + data.aqi; 
-      console.log(data);
+      data = await response.json()
+      return data;
+
     } catch (error) {
       console.error(error.message);
     }
