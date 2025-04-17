@@ -24,39 +24,13 @@ navigator.geolocation.getCurrentPosition(
                 .setLatLng(e.latlng)
                 .setContent("You clicked the map at " + e.latlng.toString())
                 .openOn(map);
+            document.getElementById('weatherInfo').innerHTML = "Retrieving weather info...";
+            updateWeatherInfo(map, e.latlng.lat, e.latlng.lng);
         }
 
         map.on('click', onMapClick);
 
-        //get weather data from weather.gov
-        getData(lat, lng).then(function(data) {
-          var weatherText = "The temperature in " + data.city + ", " + data.state + ", is currently " + data.temperature + "\u00B0F<br />"
-            + data.city + "'s Air Quality Index is currently " + data.aqi + "<br /><br />Weekly weather forecast for " + data.city + ":<br />";
-
-          for (const period of data.forecastWeekly) {
-              weatherText += period.name + ": " + period.shortForecast + ", " + period.temperature + "\u00B0F. Wind: " 
-                + period.windSpeed + " " + period.windDirection + "<br />";
-          }
-
-          weatherText += "<br /> Detailed air quality info for " + data.city + ": <br />"
-            + "Carbon monoxide (CO): " + data.pollutantInfo.co + " \u03BCg/m<sup>3</sup>; AQI: " + data.pollutantAqi.co.v + "<br />"
-            + "Nitrogen dioxide (NO<sub>2</sub>) " + data.pollutantInfo.no2 + "\u03BCg/m<sup>3</sup>; AQI: " + data.pollutantAqi.no2.v + "<br />"
-            + "Fine Particulate Matter (PM<sub>2.5</sub>)" + data.pollutantInfo.pm2_5 + "\u03BCg/m<sup>3</sup>; AQI: " + data.pollutantAqi.pm25.v + "<br />"
-            + "Large Particulate Matter (PM<sub>10</sub>)" + data.pollutantInfo.pm10 + "\u03BCg/m<sup>3</sup>" + "<br />"
-            + "Ozone (O<sub>3</sub>)" + data.pollutantInfo.o3 + "\u03BCg/m<sup>3</sup>" + "<br />"
-            + "Sulphur dioxide (SO<sub>2</sub>)" + data.pollutantInfo.so2 + "\u03BCg/m<sup>3</sup>" + "<br />"
-            + "Humidity: " + data.pollutantAqi.h.v + "%";
-          document.getElementById('weatherInfo').innerHTML = weatherText;
-          console.log(data);
-
-          //swap lon and lat index positions
-          var polyCoords = []
-          for (const pos of data.geometry.coordinates[0])
-            polyCoords.push([pos[1], pos[0]])
-
-          var polygon = L.polygon(polyCoords).addTo(map);
-          polygon.bindPopup(data.city); //polygon region label
-        });
+        updateWeatherInfo(map, lat, lng);
         /*
         //draw a circular region
         var circle = L.circle([37.327, -121.8853], {
@@ -80,6 +54,37 @@ navigator.geolocation.getCurrentPosition(
     }
 );
 
+function updateWeatherInfo(map, lat, lon) {
+  //get weather data from weather.gov
+  getData(lat, lon).then(function(data) {
+    var weatherText = "The temperature in " + data.city + ", " + data.state + ", is currently " + data.temperature + "\u00B0F<br />"
+      + data.city + "'s Air Quality Index is currently " + data.aqi + "<br /><br />Weekly weather forecast for " + data.city + ":<br />";
+
+    for (const period of data.forecastWeekly) {
+        weatherText += period.name + ": " + period.shortForecast + ", " + period.temperature + "\u00B0F. Wind: " 
+          + period.windSpeed + " " + period.windDirection + "<br />";
+    }
+
+    weatherText += "<br /> Detailed air quality info for " + data.city + ": <br />"
+      + "Carbon monoxide (CO): " + data.pollutantInfo.co + " \u03BCg/m<sup>3</sup> <br />"
+      + "Nitrogen dioxide (NO<sub>2</sub>) " + data.pollutantInfo.no2 + "\u03BCg/m<sup>3</sup> <br />"
+      + "Fine Particulate Matter (PM<sub>2.5</sub>)" + data.pollutantInfo.pm2_5 + "\u03BCg/m<sup>3</sup> <br />"
+      + "Large Particulate Matter (PM<sub>10</sub>)" + data.pollutantInfo.pm10 + "\u03BCg/m<sup>3</sup> <br />"
+      + "Ozone (O<sub>3</sub>)" + data.pollutantInfo.o3 + "\u03BCg/m<sup>3</sup>" + "<br />"
+      + "Sulphur dioxide (SO<sub>2</sub>)" + data.pollutantInfo.so2 + "\u03BCg/m<sup>3</sup>" + "<br />"
+      + "Humidity: " + data.pollutantAqi.h.v + "%";
+    document.getElementById('weatherInfo').innerHTML = weatherText;
+    console.log(data);
+
+    //swap lon and lat index positions
+    var polyCoords = []
+    for (const pos of data.geometry.coordinates[0])
+      polyCoords.push([pos[1], pos[0]])
+
+    var polygon = L.polygon(polyCoords).addTo(map);
+    polygon.bindPopup(data.city); //polygon region label
+  });
+}
 async function getData(lat, lon) {
     try {
       let req = new FormData()
