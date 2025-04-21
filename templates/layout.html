@@ -12,6 +12,8 @@
             </div>
             <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('home') }}">Community</a></li>   <!-- not implemented yet -->
+                <li><a href="{{ url_for('home') }}">News</a></li> <!-- not implemented yet -->
                 <!--TODO: logged in users should not see/access login and signup pages-->
                 {% if 'user_id' in session %}
                     <li><a href="{{ url_for('post_article') }}">Post Article</a></li>

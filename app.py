@@ -80,6 +80,5 @@ def map_test():
     return render_template('map_test.html')
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)

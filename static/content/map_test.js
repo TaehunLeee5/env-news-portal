@@ -74,7 +74,6 @@ function updateWeatherInfo(map, lat, lon) {
       + "Sulphur dioxide (SO<sub>2</sub>)" + data.pollutantInfo.so2 + "\u03BCg/m<sup>3</sup>" + "<br />"
       + "Humidity: " + data.pollutantAqi.h.v + "%";
     document.getElementById('weatherInfo').innerHTML = weatherText;
-    console.log(data);
 
     //swap lon and lat index positions
     var polyCoords = []
@@ -85,6 +84,7 @@ function updateWeatherInfo(map, lat, lon) {
     polygon.bindPopup(data.city); //polygon region label
   });
 }
+
 async function getData(lat, lon) {
     try {
       let req = new FormData()
