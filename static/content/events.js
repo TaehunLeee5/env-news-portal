@@ -9,9 +9,21 @@ navigator.geolocation.getCurrentPosition(
         const eventCardList = document.getElementById("eventList");
         getData(lat, lng).then(function(data) {
             var listHtml = ""
-            console.log(data.length);
             for (const eventCard of data) {
-                listHtml += `<li>${eventCard}</li>`;
+                listHtml += `<li>
+                  <section class="event-card">
+                    <section class="event-thumbnail">
+                      <img src="${eventCard.imgsrc}">
+                    </section>
+                    <section class="event-details">
+                      <a href="${eventCard.link}">
+                      <h3>${eventCard.name}</h3>
+                      </a>
+                      <p>${eventCard.date}</p>
+                      <p>${eventCard.location}</p>
+                    </section>
+                  </section>
+                </li>`;
             }
             eventCardList.innerHTML = listHtml;
         });
