@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 
 import requests #used for external API calls; this is different from flask.request
 import weather_service
+import events_service
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this in production!
@@ -79,6 +80,14 @@ def map_test():
     
     return render_template('map_test.html')
 
+@app.route('/events', methods=['GET','POST'])
+def events():
+    if request.method == 'POST':
+        lat = request.form.get('lat')
+        lon = request.form.get('lon')
+        return events_service.getCommunityEvents(lat, lon)
+    
+    return render_template('events.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

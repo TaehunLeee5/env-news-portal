@@ -16,7 +16,7 @@ navigator.geolocation.getCurrentPosition(
 
         //create a marker and label at location
         var marker = L.marker([lat,lng]).addTo(map);
-        marker.bindPopup("<b>You are here!</b><br> Latitude:" + lat + ", Longitude:" + lng).openPopup();
+        marker.bindPopup(`<b>You are here!</b><br> Latitude ${lat}, Longitude: ${lng}`).openPopup();
 
         var popup = L.popup();
         function onMapClick(e) {
@@ -86,20 +86,20 @@ function updateWeatherInfo(map, lat, lon) {
 }
 
 async function getData(lat, lon) {
-    try {
-      let req = new FormData()
-      req.append("lat", lat);
-      req.append("lon", lon);
-      const response = await fetch("/map_test", {method:"POST", body:req});
-      if (!response.ok) {
-        document.getElementById("weatherInfo").innerHTML = "Failed to get weather data"
-        throw new Error(`Failed to obtain weather data: ${response.status}`);
-      }
-      data = await response.json()
-      return data;
-
-    } catch (error) {
-      console.error(error.message);
+  try {
+    let req = new FormData()
+    req.append("lat", lat);
+    req.append("lon", lon);
+    const response = await fetch("/map_test", {method:"POST", body:req});
+    if (!response.ok) {
+      document.getElementById("weatherInfo").innerHTML = "Failed to get weather data"
+      throw new Error(`Failed to obtain weather data: ${response.status}`);
     }
+    data = await response.json()
+    return data;
+
+  } catch (error) {
+    console.error(error.message);
   }
+}
     

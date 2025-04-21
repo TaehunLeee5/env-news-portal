@@ -1,8 +1,8 @@
 import os
 import requests
 
-openWeatherAPIKey = os.getenv("openWeatherAPIKey")
-aqicnAPIKey = os.getenv("aqicnAPIKey")
+__openWeatherAPIKey = os.getenv("openWeatherAPIKey")
+__aqicnAPIKey = os.getenv("aqicnAPIKey")
 
 def getWeatherData(lat, lon):
     data = {}
@@ -19,15 +19,15 @@ def getWeatherData(lat, lon):
             data['temperature'] = weatherInfo['properties']['periods'][0]['temperature']
             data['geometry'] = weatherInfo['geometry']
     #will be replaced with AirNow API
-    print("https://api.waqi.info/feed/geo:" + lat + ";" + lon + "/?token=" + aqicnAPIKey, flush=True)
-    aqInfo = requests.get("https://api.waqi.info/feed/geo:" + lat + ";" + lon + "/?token=" + aqicnAPIKey)
+    print("https://api.waqi.info/feed/geo:" + lat + ";" + lon + "/?token=" + __aqicnAPIKey, flush=True)
+    aqInfo = requests.get("https://api.waqi.info/feed/geo:" + lat + ";" + lon + "/?token=" + __aqicnAPIKey)
     
     if aqInfo.ok:
         aqInfo = aqInfo.json()
         data['aqi'] = aqInfo['data']['aqi']
         data['pollutantAqi'] = aqInfo['data']['iaqi']
 
-    pollutantInfo = requests.get("http://api.openweathermap.org/data/2.5/air_pollution?lat=" + lat + "&lon=" + lon + "&appid=" + openWeatherAPIKey)
+    pollutantInfo = requests.get("http://api.openweathermap.org/data/2.5/air_pollution?lat=" + lat + "&lon=" + lon + "&appid=" + __openWeatherAPIKey)
     if pollutantInfo.ok:
         pollutantInfo = pollutantInfo.json()
         data['pollutantInfo'] = pollutantInfo['list'][0]['components']
