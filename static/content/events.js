@@ -34,13 +34,13 @@ navigator.geolocation.getCurrentPosition(
 
 function displayEventInfo(link, name, imgsrc) {
   document.getElementById("modal-title").textContent = "";
-  document.getElementById("modal-img").hidden = true;
-  document.getElementById("modal-description").textContent = "";
+  document.getElementById("modal-img").src = "";
+  document.getElementById("modal-description").innerHTML = "";
   document.getElementById("event-popup").showModal();
   getEventInfo(link).then(function(data) {
     document.getElementById("modal-title").textContent = name;
     document.getElementById("modal-img").src = imgsrc;
-    document.getElementById("modal-description").textContent = data["description"];
+    document.getElementById("modal-description").innerHTML = data["description"];
     document.getElementById("modal-img").hidden = false;
   });
 }
