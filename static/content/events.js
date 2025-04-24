@@ -33,15 +33,15 @@ navigator.geolocation.getCurrentPosition(
 )
 
 function displayEventInfo(link, name, imgsrc) {
-  document.getElementById("modal-title").textContent = "";
-  document.getElementById("modal-img").src = "";
-  document.getElementById("modal-description").innerHTML = "";
+  document.getElementById("dialog-container").style.display = "none"
   document.getElementById("event-popup").showModal();
   getEventInfo(link).then(function(data) {
     document.getElementById("modal-title").textContent = name;
     document.getElementById("modal-img").src = imgsrc;
+    document.getElementById("modal-address").textContent = data["address"];
     document.getElementById("modal-description").innerHTML = data["description"];
-    document.getElementById("modal-img").hidden = false;
+    document.getElementById("modal-link").href = link
+    document.getElementById("dialog-container").style.display = "block"
   });
 }
 

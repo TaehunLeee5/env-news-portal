@@ -47,7 +47,10 @@ def getEventInfo(link):
     pageData = requests.get(link, headers=__headers)
     pageContent = BeautifulSoup(pageData.content, "html.parser")
     eventDesc = pageContent.find("div", class_="eds-text--left")
+    eventAddress = pageContent.find("p", class_="location-info__address-text")
     eventData["description"] = str(eventDesc) #NOTE: pulls raw html format from external site; security risk
+
+    eventData["address"] = eventAddress.next_sibling if eventAddress.next_sibling != None else eventAddress.get_text()
     return jsonify(eventData)
 
 #abbreviations of us state names
