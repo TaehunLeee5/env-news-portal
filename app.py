@@ -1,3 +1,4 @@
+#python /Users/tae/Desktop/EnvironmentalNewsPortal/app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 app = Flask(__name__)
