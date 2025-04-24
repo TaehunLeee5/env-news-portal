@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .event-card {
+            display: flex;
+        }
+        .event-thumbnail {
+            height:100%;
+            width:auto;
+            margin-right: 15px;
+        }
+        .modal-body {
+            max-height: 100%;
+            overflow-y: auto;
+        }
+        #event-popup {
+            position:fixed;
+            top:0;
+            left:0;
+            max-height: 80%;
+            width:50%;
+            overflow-y: auto;
+        }
+        img {
+            height:110px;
+            width:220px;
+        }
+        ul {
+            display: inline-block;
+        }
+        ::backdrop{
+            background-color: rgb(0, 0, 0, 0.5);
+        }
+
+    </style>
+    <body>
+        <p>not done yet so here's a basic page</p> 
+        <div>
+            <ul id="eventList">
+            </ul>
+            <button onclick='document.querySelector("dialog").showModal()'></button>
+            <dialog id="event-popup">
+                <button onclick="this.parentElement.close()">Close</button>
+                <h2 id="modal-title"></h2>
+                <img id="modal-img">
+                <p id="modal-description"></p>
+            </dialog>    
+            
+        </div>    
+    </body>
+    <script src="{{url_for('static', filename='content/events.js')}}"></script>
+</head>

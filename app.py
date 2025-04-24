@@ -1,5 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
+import requests #used for external API calls; this is different from flask.request
+import weather_service
+import events_service
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this in production!
 
@@ -66,6 +70,29 @@ def logout():
 @app.route('/post_article')
 def post_article():
     return render_template('post_article.html')
+
+#NOTE: need to implement form input validation to prevent security risks
+@app.route('/map_test', methods=['GET', 'POST'])
+def map_test():
+    if request.method == 'POST':
+        lat = request.form.get('lat')
+        lon = request.form.get('lon')
+        return weather_service.getWeatherData(lat, lon)
+    
+    return render_template('map_test.html')
+
+#NOTE: need to implement form input validation to prevent security risks
+@app.route('/events', methods=['GET','POST'])
+def events():
+    if request.method == 'POST':
+        if 'lat' in request.form:
+            lat = request.form.get('lat')
+            lon = request.form.get('lon')
+            return events_service.getCommunityEvents(lat, lon)
+        elif 'link' in request.form:
+            return events_service.getEventInfo(request.form.get('link'))
+    
+    return render_template('events.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
