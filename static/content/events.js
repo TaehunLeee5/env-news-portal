@@ -1,4 +1,6 @@
+//very spaghetti
 
+var links = []
 navigator.geolocation.getCurrentPosition(
     (position) => {
         //get user's current location
@@ -7,7 +9,7 @@ navigator.geolocation.getCurrentPosition(
         console.log(`Latitude: ${lat}, longitude: ${lng}`);
 
         const eventCardList = document.getElementById("eventList");
-        getData(lat, lng).then(function(data) {
+        getEventList(lat, lng).then(function(data) {
             var listHtml = ""
             for (const eventCard of data) {
                 listHtml += `<li>
@@ -16,8 +18,8 @@ navigator.geolocation.getCurrentPosition(
                       <img src="${eventCard.imgsrc}">
                     </section>
                     <section class="event-details">
-                      <a href="${eventCard.link}">
-                      <h3>${eventCard.name}</h3>
+                      <a href="javascript:void(0)" onclick="displayEventInfo('${eventCard.link}', '${eventCard.name}', '${eventCard.imgsrc}')">
+                        <h3>${eventCard.name}</h3>
                       </a>
                       <p>${eventCard.date}</p>
                       <p>${eventCard.location}</p>
@@ -30,7 +32,36 @@ navigator.geolocation.getCurrentPosition(
     }
 )
 
-async function getData(lat, lon) {
+function displayEventInfo(link, name, imgsrc) {
+  document.getElementById("modal-title").textContent = "";
+  document.getElementById("modal-img").hidden = true;
+  document.getElementById("modal-description").textContent = "";
+  document.getElementById("event-popup").showModal();
+  getEventInfo(link).then(function(data) {
+    document.getElementById("modal-title").textContent = name;
+    document.getElementById("modal-img").src = imgsrc;
+    document.getElementById("modal-description").textContent = data["description"];
+    document.getElementById("modal-img").hidden = false;
+  });
+}
+
+//combine functions into one?
+async function getEventInfo(link) {
+  try {
+    let req = new FormData();
+    req.append("link", link);
+    const response = await fetch("/events", {method:"POST", body:req});
+    if (!response.ok) {
+      throw new Error(`Failed to obtain event info: ${response.status}`);
+    }
+    data = await response.json()
+    return data;  
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+async function getEventList(lat, lon) {
     try {
       let req = new FormData()
       req.append("lat", lat);

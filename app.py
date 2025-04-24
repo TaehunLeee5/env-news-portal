@@ -71,6 +71,7 @@ def logout():
 def post_article():
     return render_template('post_article.html')
 
+#NOTE: need to implement form input validation to prevent security risks
 @app.route('/map_test', methods=['GET', 'POST'])
 def map_test():
     if request.method == 'POST':
@@ -80,12 +81,16 @@ def map_test():
     
     return render_template('map_test.html')
 
+#NOTE: need to implement form input validation to prevent security risks
 @app.route('/events', methods=['GET','POST'])
 def events():
     if request.method == 'POST':
-        lat = request.form.get('lat')
-        lon = request.form.get('lon')
-        return events_service.getCommunityEvents(lat, lon)
+        if 'lat' in request.form:
+            lat = request.form.get('lat')
+            lon = request.form.get('lon')
+            return events_service.getCommunityEvents(lat, lon)
+        elif 'link' in request.form:
+            return events_service.getEventInfo(request.form.get('link'))
     
     return render_template('events.html')
 
