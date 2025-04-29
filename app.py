@@ -97,7 +97,8 @@ def events():
 
 @app.route('/news', methods=['GET','POST'])
 def news():
-    news_service.getNewsHeadlines()
+    if request.method == "POST":
+        return news_service.getNewsHeadlines()
     return render_template('news.html')
 
 if __name__ == '__main__':
