@@ -6,6 +6,7 @@ import requests
 __headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
 }
+
 #returns a list of community events, each containing description, date, tags, etc.
 #events are scraped from eventbrite site
 def getCommunityEvents(lat, lon):
@@ -40,12 +41,16 @@ def getCommunityEvents(lat, lon):
 
     return jsonify(eventData)
 
+#TODO: check if link is not malicious, make request using newly added eventbrite API key
 def getEventInfo(link):
     eventData = {}
     pageData = requests.get(link, headers=__headers)
     pageContent = BeautifulSoup(pageData.content, "html.parser")
     eventDesc = pageContent.find("div", class_="eds-text--left")
-    eventData["description"] = eventDesc.get_text()
+    eventAddress = pageContent.find("p", class_="location-info__address-text")
+    eventData["description"] = str(eventDesc) #NOTE: pulls raw html format from external site; security risk
+
+    eventData["address"] = eventAddress.next_sibling if eventAddress.next_sibling != None else eventAddress.get_text()
     return jsonify(eventData)
 
 #abbreviations of us state names

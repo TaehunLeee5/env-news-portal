@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <!--move style content into separate file later-->
+    <style>
+        ul {
+            display: inline-block;
+        }
+        img {
+            height:110px;
+            width:220px;
+        }
+        .news-card {
+            display: flex;
+        }
+        .news-thumbnail {
+            height:100%;
+            width:auto;
+            margin-right: 15px;
+        }
+    </style>
+    <body>
+        <p>basic news page</p>
+        <p id="result-count"></p>
+        <div>
+            <ul id="newsList">
+            </ul>
+        </div>
+        <script src="{{url_for('static', filename='content/news.js')}}"></script>
+    </body>
+</html>
