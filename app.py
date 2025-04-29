@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import requests #used for external API calls; this is different from flask.request
 import weather_service
 import events_service
+import news_service
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this in production!
@@ -93,6 +94,11 @@ def events():
             return events_service.getEventInfo(request.form.get('link'))
     
     return render_template('events.html')
+
+@app.route('/news', methods=['GET','POST'])
+def news():
+    news_service.getNewsHeadlines()
+    return render_template('news.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -41,7 +41,7 @@ def getCommunityEvents(lat, lon):
 
     return jsonify(eventData)
 
-#TODO: check if link is not malicious
+#TODO: check if link is not malicious, make request using newly added eventbrite API key
 def getEventInfo(link):
     eventData = {}
     pageData = requests.get(link, headers=__headers)
