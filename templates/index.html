@@ -5,34 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Environmental News Portal</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            border-bottom: 2px solid #ddd;
-        }
-        .title {
-            font-size: 24px;
-            color: #2c3e50;
-            font-weight: bold;
-        }
-        .nav {
-            font-size: 16px;
-        }
-        .nav a {
-            margin-left: 15px;
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-        .nav a:hover {
-            text-decoration: underline;
-        }
         .content {
             text-align: center;
             margin-top: 50px;
@@ -47,22 +19,13 @@
     </style>
 </head>
 <body>
-
-    <div class="header">
-        <div class="title">Environmental News Portal</div>
-        <div class="nav">
-            {% if 'user_id' in session %}
-                <a href="{{ url_for('post_article') }}">Post Article</a> | <a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a>
-            {% elif request.path not in ['/login', '/signup'] %}
-                <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('signup') }}">Sign Up</a>
-            {% endif %}
-        </div>
-    </div>
+    {% extends "layout.html" %}
+    {% block content %}
 
     <div class="content">
         <h1>Welcome to the Environmental News Portal</h1>
         <p>Stay updated with the latest environmental news.</p>
     </div>
-
+    {% endblock %}
 </body>
 </html>
