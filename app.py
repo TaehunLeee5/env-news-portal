@@ -1,11 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+import os
 
 import requests #used for external API calls; this is different from flask.request
 import weather_service
 import events_service
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate  import Migrate
+from models        import db, User, Post
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Change this in production!
+app.secret_key = 'aqicnAPIKey'  # This is a development key - change in production!
+
+app.config['SQLALCHEMY_DATABASE_URI']        = 'sqlite:///app.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+migrate = Migrate(app, db)
 
 # Dummy user data (you can replace with a real database)
 dummy_user = {
@@ -30,12 +40,20 @@ def signup():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
+        user_email = User.query.filter_by(email=email).first()
+        if user_email:
+            flash("Email already in use. Please try a different email.", "flash-error")
+            return render_template('signup.html')
 
         if password != confirm_password:
             flash("Passwords do not match. Please try again.", "flash-error")
             return render_template('signup.html')
 
-        # Here, you'd typically save the user to a database
+        user = User(name=name, email=email, password=password)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+
         flash("Sign up successful! Please log in.", "flash-success")
         return redirect(url_for('login'))
 
@@ -46,10 +64,11 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
 
-        if email == dummy_user['email'] and password == dummy_user['password']:
-            session['user_id'] = email
-            session['user_name'] = dummy_user['name']
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            session['user_name'] = user.name
             flash("Logged in successfully!", "flash-success")
             return redirect(url_for('home'))
         else:
