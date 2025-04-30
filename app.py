@@ -17,13 +17,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Dummy user data (you can replace with a real database)
-dummy_user = {
-    'email': 'test@example.com',
-    'password': 'password123',
-    'name': 'John Doe'
-}
-
 @app.context_processor
 def inject_now():
     from datetime import datetime
@@ -89,6 +82,21 @@ def logout():
 @app.route('/post_article')
 def post_article():
     return render_template('post_article.html')
+
+@app.route('/publish_article', methods=['POST'])
+def publish_article():
+    title = request.form.get('title')
+    category = request.form.get('category')
+    image_url = request.form.get('image_url')
+    content = request.form.get('content')
+    
+    post = Post(title=title, category=category, image_url=image_url, body=content)
+    db.session.add(post)
+    db.session.commit()
+    
+    flash("Article published successfully!", "flash-success")
+    return redirect(url_for('home'))
+    
 
 @app.route('/map_test', methods=['GET', 'POST'])
 def map_test():
