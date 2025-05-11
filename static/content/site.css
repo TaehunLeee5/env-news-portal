@@ -5,10 +5,10 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f4f4f4;
+    background-color: #fcfbe9;
 }
 
 .container {
@@ -18,45 +18,85 @@ body {
 }
 
 /* Navigation */
-header {
-    background-color: #2c8d46;
+.main-header {
+    background: #4d6532;
     color: #fff;
-    padding: 10px 0;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
-nav {
+.header-bar {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+    position: relative;
+    padding: 18px 40px 12px 40px;
+    background: #4d6532;
 }
 
-.logo a {
-    color: #fff;
-    font-size: 24px;
-    font-weight: bold;
+.logo-text {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: 2.7rem;
+    font-weight: 700;
+    color: #d0f03a;
     text-decoration: none;
+    letter-spacing: 1px;
 }
 
-.nav-links {
+.header-actions {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.sign-in-btn {
+    background: #d0f03a;
+    color: #35511c;
+    font-weight: 600;
+    border: none;
+    border-radius: 22px;
+    padding: 8px 28px;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.sign-in-btn:hover {
+    background: #b8d82a;
+}
+
+.secondary-nav {
+    background: #d0f03a;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.secondary-nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
     list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.nav-links li {
-    margin-left: 20px;
-}
-
-.nav-links a {
-    color: #fff;
+.secondary-nav a {
+    color: #35511c;
+    font-size: 1.25rem;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
     text-decoration: none;
     font-weight: 500;
+    padding: 12px 0;
+    display: block;
+    transition: color 0.2s;
 }
 
-.nav-links a:hover {
-    text-decoration: underline;
+.secondary-nav a:hover {
+    color: #4d6532;
 }
 
 /* Hero Section */
@@ -232,7 +272,8 @@ nav {
 }
 
 /* Forms */
-.auth-container, .post-container {
+.auth-container,
+.post-container {
     max-width: 600px;
     margin: 0 auto;
     background-color: #fff;
@@ -241,7 +282,8 @@ nav {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.auth-container h2, .post-container h2 {
+.auth-container h2,
+.post-container h2 {
     text-align: center;
     margin-bottom: 30px;
     color: #2c8d46;
@@ -257,7 +299,9 @@ nav {
     font-weight: 500;
 }
 
-.form-group input, .form-group select, .form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
@@ -266,15 +310,19 @@ nav {
 }
 
 button[type="submit"] {
-    background-color: #2c8d46;
-    color: #fff;
+    background: #d0f03a !important;
+    color: #35511c !important;
+    font-family: 'Playfair Display', 'Georgia', serif !important;
+    font-weight: 700 !important;
     border: none;
-    padding: 12px 20px;
-    border-radius: 4px;
+    border-radius: 5px;
+    padding: 12px 0;
+    font-size: 1.25rem;
+    margin-top: 8px;
     cursor: pointer;
-    width: 100%;
-    font-size: 1rem;
-    margin-top: 10px;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    letter-spacing: 0.5px;
 }
 
 .auth-container p {
@@ -287,14 +335,50 @@ button[type="submit"] {
     text-align: center;
 }
 
-.google-btn {
-    display: inline-block;
-    background-color: #db4437;
+.login-btn,
+.signup-btn {
+    background: #d0f03a;
+    color: #35511c;
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 0;
+    font-size: 1.25rem;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    letter-spacing: 0.5px;
+}
+
+.login-btn:hover,
+.signup-btn:hover {
+    background: #b8d82a;
+}
+
+.google-login-btn,
+.signup-google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #db4437;
     color: #fff;
-    padding: 10px 20px;
-    border-radius: 4px;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.13rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 0;
+    width: 100%;
+    margin-top: 18px;
     text-decoration: none;
-    margin-top: 10px;
+    transition: background 0.2s;
+}
+
+.google-login-btn:hover,
+.signup-google-btn:hover {
+    background: #b83528;
 }
 
 /* Flash messages */
@@ -325,3 +409,116 @@ footer {
     margin-top: 40px;
     color: #666;
 }
+
+/* --- LOGIN PAGE --- */
+.login-flex-wrapper {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fcfbe9;
+}
+
+.login-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+    padding: 48px 38px 36px 38px;
+    min-width: 350px;
+    max-width: 400px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-title {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: 2.5rem;
+    color: #4d6532;
+    margin-bottom: 8px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.login-subtext {
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    color: #444;
+    font-size: 1.05rem;
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.login-label {
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    color: #333;
+    font-size: 1.08rem;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.login-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cfd8c0;
+    border-radius: 5px;
+    font-size: 1.08rem;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    background: #f8fbe9;
+    margin-bottom: 2px;
+}
+
+.login-btn {
+    background: #d0f03a;
+    color: #35511c;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 0;
+    font-size: 1.15rem;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-btn:hover {
+    background: #b8d82a;
+}
+
+.google-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #db4437;
+    color: #fff;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.13rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 0;
+    width: 100%;
+    margin-top: 18px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.google-login-btn:hover {
+    background: #b83528;
+}
+
+.google-icon {
+    font-family: 'Material Icons', Arial, sans-serif;
+    font-size: 1.3em;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Playfair+Display:wght@700&display=swap');
