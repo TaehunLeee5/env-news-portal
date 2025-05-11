@@ -1,93 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum - Environmental News Portal</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            border-bottom: 2px solid #ddd;
-        }
-        .title {
-            font-size: 24px;
-            color: #2c3e50;
-            font-weight: bold;
-        }
-        .nav {
-            font-size: 16px;
-        }
-        .nav a {
-            margin-left: 15px;
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-        .nav a:hover {
-            text-decoration: underline;
-        }
-        .content {
-            max-width: 600px;
-            margin: 30px auto;
-            text-align: center;
-        }
-        form {
-            margin-top: 20px;
-        }
-        input, textarea {
-            width: 100%;
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
+{% extends "layout.html" %}
 
-    <div class="header">
-        <div class="title">Environmental News Portal</div>
-        <div class="nav">
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('forum') }}">Forum</a>
-            {% if 'user_id' in session %}
-                <a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('signup') }}">Sign Up</a>
-            {% endif %}
+{% block content %}
+<div class="auth-container">
+    <h2>Forum</h2>
+    <div class="forum-posts">
+        {% if posts %}
+            {% for post in posts %}
+                <div class="forum-post">
+                    <h3>{{ post['title'] }}</h3>
+                    <p><strong>Category:</strong> {{ post['category'] }} | <strong>By:</strong> {{ post['user_name'] }} | <strong>Date:</strong> {{ post['created_at'][:16].replace('T', ' ') if post['created_at'] else '' }}</p>
+                    {% if post['image_url'] %}
+                        <img src="{{ post['image_url'] }}" alt="Post Image" style="max-width:100%;max-height:200px;margin-bottom:10px;">
+                    {% endif %}
+                    {% if post['uploaded_image'] %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ post['uploaded_image']) }}" alt="Uploaded Image" style="max-width:100%;max-height:200px;margin-bottom:10px;">
+                    {% endif %}
+                    <div class="forum-content">{{ post['content'] }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No posts yet. Be the first to post!</p>
+        {% endif %}
+    </div>
+    {% if 'user_id' in session %}
+    <hr>
+    <h2>Post a New Article</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required>
         </div>
-    </div>
-
-    <div class="content">
-        <h1>Forum</h1>
-        <p>Welcome to the Environmental News Forum! Post your thoughts below.</p>
-
-        <form method="POST">
-            <input type="text" name="title" placeholder="Post Title" required>
-            <textarea name="content" placeholder="Write your message here..." rows="5" required></textarea>
-            <button type="submit">Submit Post</button>
-        </form>
-
-    </div>
-
-</body>
-</html>
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="Climate Change">Climate Change</option>
+                <option value="Conservation">Conservation</option>
+                <option value="Pollution">Pollution</option>
+                <option value="Wildlife">Wildlife</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="image_url">Image URL (optional)</label>
+            <input type="url" id="image_url" name="image_url">
+        </div>
+        <div class="form-group">
+            <label for="uploaded_image">Upload Image (optional)</label>
+            <input type="file" id="uploaded_image" name="uploaded_image" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="8" required></textarea>
+        </div>
+        <button type="submit" class="publish-btn">Publish Article</button>
+    </form>
+    {% else %}
+    <p style="text-align:center;margin-top:30px;">Log in to post your own article.</p>
+    {% endif %}
+</div>
+{% endblock %}

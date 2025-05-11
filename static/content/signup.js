@@ -1,4 +1,3 @@
-
 //may be replaced with html pattern attribute if detailed feedback isn't necessary
 function validateName(name) {
     var errorMsg = "";
@@ -23,18 +22,7 @@ function validateEmail(email) {
 
 function validatePassword(pw) {
     var errorMsg = "";
-
-    if (pw.length < 6)
-        errorMsg = errorMsg.concat("Your password must contain at least 6 characters.\n");
-    if (pw.length > 20)
-        errorMsg = errorMsg.concat("Your password must contain at most 20 characters.\n");
-    if (pw.search("[*@!#%&()$^~{}]+") == -1)
-        errorMsg = errorMsg.concat("Your password must contain at least 1 special character.\n");
-    if (pw.search("[0-9]+") == -1)
-        errorMsg = errorMsg.concat("Your password must contain at least 1 digit\n");
-    if (pw.search("[A-Z]+") == -1)
-        errorMsg = errorMsg.concat("Your password must contain at least 1 uppercase letter.");
-
+    // No password requirements - allow any password
     return errorMsg;
 }
 
