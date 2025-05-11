@@ -4,13 +4,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import requests #used for external API calls; this is different from flask.request
 import weather_service
 import events_service
-<<<<<<< HEAD
 import database
 import os
 from werkzeug.utils import secure_filename
-=======
-import news_service
->>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this in production!
@@ -78,7 +74,6 @@ def signup():
             flash("Passwords do not match. Please try again.", "flash-error")
             return render_template('signup.html')
 
-<<<<<<< HEAD
         # Create new user in database
         if database.create_user(name, email, password):
             flash("Sign up successful! Please log in.", "flash-success")
@@ -86,11 +81,6 @@ def signup():
         else:
             flash("Email already exists. Please use a different email.", "flash-error")
             return render_template('signup.html')
-=======
-        # Here, you'd typically save the user to a database
-        flash("Sign up successful! Please log in.", "flash-success")
-        return redirect(url_for('login'))
->>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
 
     return render_template('signup.html')
 
@@ -100,16 +90,10 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-<<<<<<< HEAD
         user = database.verify_user(email, password)
         if user:
             session['user_id'] = user['id']
             session['user_name'] = user['name']
-=======
-        if email == dummy_user['email'] and password == dummy_user['password']:
-            session['user_id'] = email
-            session['user_name'] = dummy_user['name']
->>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
             flash("Logged in successfully!", "flash-success")
             return redirect(url_for('home'))
         else:
@@ -154,15 +138,6 @@ def events():
     
     return render_template('events.html')
 
-<<<<<<< HEAD
-=======
-@app.route('/news', methods=['GET','POST'])
-def news():
-    if request.method == "POST":
-        return news_service.getNewsHeadlines()
-    return render_template('news.html')
-
->>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
 if __name__ == '__main__':
     app.run(debug=True)
 
