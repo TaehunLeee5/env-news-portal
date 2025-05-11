@@ -12,6 +12,9 @@
             </div>
             <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('home') }}">Community</a></li>   <!-- not implemented yet -->
+                <li><a href="{{ url_for('home') }}">News</a></li> <!-- not implemented yet -->
+                <!--TODO: logged in users should not see/access login and signup pages-->
                 {% if 'user_id' in session %}
                     <li><a href="{{ url_for('post_article') }}">Post Article</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a></li>
@@ -24,11 +27,11 @@
     </header>
     
     <div class="container">
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flashes">
-                    {% for message in messages %}
-                        <div class="flash-message">{{ message }}</div>
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -36,5 +39,9 @@
         
         {% block content %}{% endblock %}
     </div>
+    
+    <footer>
+        <p>&copy; Environmental News Portal</p>
+    </footer>
 </body>
 </html>

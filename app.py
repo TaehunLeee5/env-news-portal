@@ -1,6 +1,10 @@
 #python /Users/tae/Desktop/EnvironmentalNewsPortal/app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
+import requests #used for external API calls; this is different from flask.request
+import weather_service
+import events_service
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this in production!
 
@@ -20,6 +24,10 @@ def inject_now():
 def home():
     return render_template('index.html')
 
+@app.route('/forum', methods=['GET', 'POST'])
+def forum():
+    return render_template('forum.html')
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -29,11 +37,11 @@ def signup():
         confirm_password = request.form.get('confirm_password')
 
         if password != confirm_password:
-            flash("Passwords do not match. Please try again.", "error")
+            flash("Passwords do not match. Please try again.", "flash-error")
             return render_template('signup.html')
 
         # Here, you'd typically save the user to a database
-        flash("Sign up successful! Please log in.", "success")
+        flash("Sign up successful! Please log in.", "flash-success")
         return redirect(url_for('login'))
 
     return render_template('signup.html')
@@ -47,10 +55,10 @@ def login():
         if email == dummy_user['email'] and password == dummy_user['password']:
             session['user_id'] = email
             session['user_name'] = dummy_user['name']
-            flash("Logged in successfully!", "success")
+            flash("Logged in successfully!", "flash-success")
             return redirect(url_for('home'))
         else:
-            flash("Invalid email or password.", "error")
+            flash("Invalid email or password.", "flash-error")
 
     return render_template('login.html')
 
@@ -61,8 +69,54 @@ def login_google():
 @app.route('/logout')
 def logout():
     session.clear()
-    flash("You have been logged out.", "success")
+    flash("You have been logged out.", "flash-success")
     return redirect(url_for('login'))
+
+@app.route('/post_article')
+def post_article():
+    return render_template('post_article.html')
+
+#NOTE: need to implement form input validation to prevent security risks
+@app.route('/map_test', methods=['GET', 'POST'])
+def map_test():
+    if request.method == 'POST':
+        lat = request.form.get('lat')
+        lon = request.form.get('lon')
+        return weather_service.getWeatherData(lat, lon)
+    
+    return render_template('map_test.html')
+
+#NOTE: need to implement form input validation to prevent security risks
+@app.route('/events', methods=['GET','POST'])
+def events():
+    if request.method == 'POST':
+        if 'lat' in request.form:
+            lat = request.form.get('lat')
+            lon = request.form.get('lon')
+            return events_service.getCommunityEvents(lat, lon)
+        elif 'link' in request.form:
+            return events_service.getEventInfo(request.form.get('link'))
+    
+    return render_template('events.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route('/forum', methods=['GET', 'POST'])
+def forum():
+    if request.method == 'POST':
+        if 'user_id' not in session:
+            flash("You must be logged in to post a message.", "flash-error")
+            return redirect(url_for('login'))
+        
+        title = request.form.get('title')
+        content = request.form.get('content')
+
+        # For now, just print it (later save into database or list)
+        print(f"New Forum Post by {session['user_name']}: {title} - {content}", flush=True)
+        
+        flash("Your post has been submitted!", "flash-success")
+        return redirect(url_for('forum'))
+
+    return render_template('forum.html')
+
