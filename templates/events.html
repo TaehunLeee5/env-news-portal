@@ -32,13 +32,28 @@
         ::backdrop{
             background-color: rgb(0, 0, 0, 0.5);
         }
+<<<<<<< HEAD
 
+=======
+        
+        #modal-img {
+            width:80%;
+            height:auto;
+            margin-left: auto;
+            margin-right: auto;
+            display:block;
+        }
+        #modal-link {
+            float:right;
+        }
+>>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
     </style>
     <body>
         <p>not done yet so here's a basic page</p> 
         <div>
             <ul id="eventList">
             </ul>
+<<<<<<< HEAD
             <button onclick='document.querySelector("dialog").showModal()'></button>
             <dialog id="event-popup">
                 <button onclick="this.parentElement.close()">Close</button>
@@ -47,6 +62,24 @@
                 <p id="modal-description"></p>
             </dialog>    
             
+=======
+            <dialog id="event-popup">
+                <div id="dialog-container">
+                    <div id="modal-nav">
+                        <button onclick="document.getElementById('event-popup').close()">Close</button>
+                        <a id="modal-link">
+                            <button>Go to External Site</button> <!--replace with an img icon later-->
+                        </a>
+                    </div>
+                    <h2 id="modal-title"></h2>
+                    <img id="modal-img">
+                    <h3>Location</h3>
+                    <p id="modal-address"></p>
+                    <h3>Description</h3>
+                    <p id="modal-description"></p>   
+                </div>
+            </dialog>    
+>>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
         </div>    
     </body>
     <script src="{{url_for('static', filename='content/events.js')}}"></script>
