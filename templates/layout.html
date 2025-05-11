@@ -12,11 +12,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
-<<<<<<< HEAD
                 <li><a href="{{ url_for('forum') }}">Community</a></li>
-=======
-                <li><a href="{{ url_for('home') }}">Community</a></li>   <!-- not implemented yet -->
->>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
                 <li><a href="{{ url_for('home') }}">News</a></li> <!-- not implemented yet -->
                 <!--TODO: logged in users should not see/access login and signup pages-->
                 {% if 'user_id' in session %}
