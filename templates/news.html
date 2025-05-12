@@ -18,6 +18,11 @@
             width:auto;
             margin-right: 15px;
         }
+        #page-nav > *{
+            display: inline;
+            margin-right: 10px;
+            margin-left: 10px;
+        }
     </style>
     <body>
         <p>basic news page</p>
@@ -26,6 +31,7 @@
             <ul id="newsList">
             </ul>
         </div>
+        <div id="page-nav"></div>
         <script src="{{url_for('static', filename='content/news.js')}}"></script>
     </body>
 </html>

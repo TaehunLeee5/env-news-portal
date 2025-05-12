@@ -142,7 +142,8 @@ def events():
 @app.route('/news', methods=['GET','POST'])
 def news():
     if request.method == 'POST':
-        return news_service.getNewsHeadlines()
+        pageNumber = request.form.get('pageNumber')
+        return news_service.getNewsHeadlines(pageNumber)
 
     return render_template('news.html')
 
