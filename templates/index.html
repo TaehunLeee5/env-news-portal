@@ -1,72 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Environmental News Portal</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            border-bottom: 2px solid #ddd;
-        }
-        .title {
-            font-size: 24px;
-            color: #2c3e50;
-            font-weight: bold;
-        }
-        .nav {
-            font-size: 16px;
-        }
-        .nav a {
-            margin-left: 15px;
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-        .nav a:hover {
-            text-decoration: underline;
-        }
-        .content {
-            text-align: center;
-            margin-top: 50px;
-        }
-        h1 {
-            color: #2c3e50;
-        }
-        p {
-            font-size: 18px;
-            color: #555;
-        }
-    </style>
-</head>
-<body>
+{% extends "layout.html" %}
 
-    <div class="header">
-        <div class="title">Environmental News Portal</div>
-        <div class="nav">
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('forum') }}">Forum</a>
-            {% if 'user_id' in session %}
-                <a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a>
-            {% elif request.path not in ['/login', '/signup'] %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('signup') }}">Sign Up</a>
-            {% endif %}
+{% block content %}
+<div class="dashboard-main-wrapper">
+    <div class="dashboard-header-row">
+        <h1 class="dashboard-title">Notification Dashboard</h1>
+        <a href="#" class="dashboard-manage-link">&#9881; Manage Notifications</a>
+    </div>
+    <div class="dashboard-filter-row">
+        <form method="get" id="dashboard-sort-form">
+            <select class="dashboard-filter-select" name="sort"
+                onchange="document.getElementById('dashboard-sort-form').submit()">
+                <option value="recent">Recent</option>
+                <option value="oldest">Oldest</option>
+                <option value="title">A-Z</option>
+            </select>
+        </form>
+    </div>
+    <div class="dashboard-notifications-list">
+        {% if notifications %}
+        {% for note in notifications %}
+        <div class="dashboard-notification-card">
+            <div class="dashboard-notification-header">
+                <h2 class="dashboard-notification-title">{{ note['title'] }}</h2>
+            </div>
+            <div class="dashboard-notification-body">
+                <div class="dashboard-notification-snippet">{{ note['content'][:200] }}{% if note['content']|length >
+                    200 %}...{% endif %}</div>
+            </div>
+            <div class="dashboard-notification-footer">
+                <span class="dashboard-notification-meta">{{ note['date'] }}</span>
+                <a href="#" class="dashboard-dismiss-link">Dismiss</a>
+            </div>
         </div>
+        {% endfor %}
+        {% else %}
+        <p>No notifications yet.</p>
+        {% endif %}
     </div>
-
-    <div class="content">
-        <h1>Welcome to the Environmental News Portal</h1>
-        <p>Stay updated with the latest environmental news.</p>
-    </div>
-
-</body>
-</html>
-
+</div>
+{% endblock %}

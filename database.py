@@ -27,6 +27,7 @@ def init_db():
             image_url TEXT,
             uploaded_image TEXT,
             content TEXT NOT NULL,
+            zipcode TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id)
         )
@@ -59,18 +60,32 @@ def verify_user(email, password):
     return None
 
 # Add a new forum post
-def add_forum_post(user_id, user_name, title, category, image_url, uploaded_image, content):
+def add_forum_post(user_id, user_name, title, category, image_url, uploaded_image, content, zipcode):
     conn = get_db_connection()
     conn.execute('''
-        INSERT INTO forum_posts (user_id, user_name, title, category, image_url, uploaded_image, content)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (user_id, user_name, title, category, image_url, uploaded_image, content))
+        INSERT INTO forum_posts (user_id, user_name, title, category, image_url, uploaded_image, content, zipcode)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (user_id, user_name, title, category, image_url, uploaded_image, content, zipcode))
     conn.commit()
     conn.close()
 
 # Fetch all forum posts (newest first)
-def get_all_forum_posts():
+def get_all_forum_posts(sort='newest', zipcodes=None):
     conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM forum_posts ORDER BY created_at DESC').fetchall()
+    if sort == 'newest':
+        order = 'created_at DESC'
+    elif sort == 'oldest':
+        order = 'created_at ASC'
+    elif sort == 'title':
+        order = 'title COLLATE NOCASE ASC'
+    else:
+        order = 'created_at DESC'
+    if zipcodes:
+        if isinstance(zipcodes, str):
+            zipcodes = [zipcodes]
+        placeholders = ','.join('?' for _ in zipcodes)
+        posts = conn.execute(f'SELECT * FROM forum_posts WHERE zipcode IN ({placeholders}) ORDER BY {order}', zipcodes).fetchall()
+    else:
+        posts = conn.execute(f'SELECT * FROM forum_posts ORDER BY {order}').fetchall()
     conn.close()
     return posts 

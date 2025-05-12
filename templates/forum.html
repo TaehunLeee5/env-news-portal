@@ -1,61 +1,155 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="auth-container">
-    <h2>Forum</h2>
-    <div class="forum-posts">
-        {% if posts %}
-            {% for post in posts %}
-                <div class="forum-post">
-                    <h3>{{ post['title'] }}</h3>
-                    <p><strong>Category:</strong> {{ post['category'] }} | <strong>By:</strong> {{ post['user_name'] }} | <strong>Date:</strong> {{ post['created_at'][:16].replace('T', ' ') if post['created_at'] else '' }}</p>
-                    {% if post['image_url'] %}
-                        <img src="{{ post['image_url'] }}" alt="Post Image" style="max-width:100%;max-height:200px;margin-bottom:10px;">
-                    {% endif %}
-                    {% if post['uploaded_image'] %}
-                        <img src="{{ url_for('static', filename='uploads/' ~ post['uploaded_image']) }}" alt="Uploaded Image" style="max-width:100%;max-height:200px;margin-bottom:10px;">
-                    {% endif %}
-                    <div class="forum-content">{{ post['content'] }}</div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No posts yet. Be the first to post!</p>
-        {% endif %}
+<div class="forum-main-wrapper">
+    <div class="forum-header-row">
+        <h1 class="forum-title">Local Forum for {{ zipcode }} <span class="forum-change-link"><a href="#"
+                    onclick="openZipModal();return false;">change</a></span></h1>
     </div>
-    {% if 'user_id' in session %}
-    <hr>
-    <h2>Post a New Article</h2>
-    <form method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title" required>
+    <div class="forum-content-row">
+        <div class="forum-posts-col">
+            <div class="forum-filter-row">
+                <form method="get" id="forum-sort-form" style="display:flex;align-items:center;gap:16px;">
+                    {% if tag %}
+                    <input type="hidden" name="tag" value="{{ tag }}">
+                    {% endif %}
+                    <select class="forum-filter-select" name="sort"
+                        onchange="document.getElementById('forum-sort-form').submit()">
+                        <option value="popular" {% if sort=='popular' %}selected{% endif %}>Popular</option>
+                        <option value="newest" {% if sort=='newest' %}selected{% endif %}>Newest</option>
+                        <option value="oldest" {% if sort=='oldest' %}selected{% endif %}>Oldest</option>
+                        <option value="title" {% if sort=='title' %}selected{% endif %}>A-Z</option>
+                    </select>
+                    <input type="text" name="q" class="forum-search-input" placeholder="Search posts..."
+                        value="{{ q|default('') }}" style="min-width:180px;">
+                    <button type="submit" class="forum-search-btn">Search</button>
+                    {% if tag %}
+                    <span class="forum-filter-tag-label forum-tag forum-tag-{{ tag|lower|replace(' ', '-') }}">
+                        {{ tag }}
+                    </span>
+                    <a href="?{% if sort %}sort={{ sort }}{% endif %}" class="forum-filter-clear">&times;</a>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="forum-posts-list">
+                {% if posts %}
+                {% for post in posts %}
+                <div class="forum-post-card">
+                    <div class="forum-post-header">
+                        <h2 class="forum-post-title">{{ post['title'] }}</h2>
+                        <div class="forum-post-tags">
+                            {% if post['category'] %}
+                            <span class="forum-tag forum-tag-{{ post['category']|lower|replace(' ', '-') }}">{{
+                                post['category'] }}</span>
+                            {% endif %}
+                            {# Add more tags here if your data supports it #}
+                        </div>
+                    </div>
+                    <div class="forum-post-body">
+                        <div class="forum-post-snippet">{{ post['content'][:200] }}{% if post['content']|length > 200
+                            %}...{% endif %}</div>
+                    </div>
+                    <div class="forum-post-footer">
+                        <span class="forum-post-meta">by {{ post['user_name'] }} on {{
+                            post['created_at'][:16].replace('T', ' ') if post['created_at'] else '' }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p>No posts yet. Be the first to post!</p>
+                {% endif %}
+            </div>
         </div>
-        <div class="form-group">
-            <label for="category">Category</label>
-            <select id="category" name="category" required>
-                <option value="Climate Change">Climate Change</option>
-                <option value="Conservation">Conservation</option>
-                <option value="Pollution">Pollution</option>
-                <option value="Wildlife">Wildlife</option>
-                <option value="Other">Other</option>
-            </select>
+        <div class="forum-sidebar-col">
+            <div class="forum-sidebar-card">
+                <h3>Sort by Tags</h3>
+                <div class="forum-sidebar-tags">
+                    <a href="?tag=Promo{% if sort %}&sort={{ sort }}{% endif %}"
+                        class="forum-tag forum-tag-promo">Promo</a>
+                    <a href="?tag=Fun{% if sort %}&sort={{ sort }}{% endif %}" class="forum-tag forum-tag-fun">Fun</a>
+                    <a href="?tag=Environment{% if sort %}&sort={{ sort }}{% endif %}"
+                        class="forum-tag forum-tag-environment">Environment</a>
+                    <a href="?tag=Event{% if sort %}&sort={{ sort }}{% endif %}"
+                        class="forum-tag forum-tag-event">Event</a>
+                </div>
+            </div>
+            <button class="forum-create-btn" onclick="openCreatePostModal()">Create Post</button>
         </div>
-        <div class="form-group">
-            <label for="image_url">Image URL (optional)</label>
-            <input type="url" id="image_url" name="image_url">
-        </div>
-        <div class="form-group">
-            <label for="uploaded_image">Upload Image (optional)</label>
-            <input type="file" id="uploaded_image" name="uploaded_image" accept="image/*">
-        </div>
-        <div class="form-group">
-            <label for="content">Content</label>
-            <textarea id="content" name="content" rows="8" required></textarea>
-        </div>
-        <button type="submit" class="publish-btn">Publish Article</button>
-    </form>
-    {% else %}
-    <p style="text-align:center;margin-top:30px;">Log in to post your own article.</p>
-    {% endif %}
+    </div>
 </div>
+
+<!-- Create Post Modal -->
+<div id="create-post-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+        <h1 class="modal-title">Create Post</h1>
+        <form id="create-post-form" method="POST" action="{{ url_for('forum') }}">
+            <input type="hidden" name="zipcode" value="{{ zipcode }}">
+            <label for="modal-title-input" class="modal-label">Title</label>
+            <input type="text" id="modal-title-input" name="title" class="modal-input" required>
+            <label class="modal-label">Tag</label>
+            <div class="modal-tags-row" id="modal-tag-icons">
+                <span class="forum-tag forum-tag-promo modal-tag-icon" data-tag="Promo">Promo</span>
+                <span class="forum-tag forum-tag-fun modal-tag-icon" data-tag="Fun">Fun</span>
+                <span class="forum-tag forum-tag-environment modal-tag-icon" data-tag="Environment">Environment</span>
+                <span class="forum-tag forum-tag-event modal-tag-icon" data-tag="Event">Event</span>
+            </div>
+            <input type="hidden" name="category" id="modal-selected-tag" required>
+            <label for="modal-body-input" class="modal-label">Body</label>
+            <textarea id="modal-body-input" name="content" class="modal-textarea" required></textarea>
+            <button type="submit" class="modal-publish-btn">Publish</button>
+            <button type="button" class="modal-cancel-btn" onclick="closeCreatePostModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<!-- Zipcode Change Modal -->
+<div id="zip-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content" style="max-width:340px;min-width:260px;">
+        <h2 class="modal-title" style="font-size:2rem;">Change Zip Code</h2>
+        <form id="zip-form" method="get" action="{{ url_for('forum') }}">
+            <label for="zip-input" class="modal-label">Enter Zip Code</label>
+            <input type="text" id="zip-input" name="zipcode" class="modal-input" value="{{ zipcode }}" maxlength="10"
+                required pattern="\d{5}">
+            <button type="submit" class="modal-publish-btn" style="margin-top:18px;">Go</button>
+            <button type="button" class="modal-cancel-btn" onclick="closeZipModal()">Cancel</button>
+            {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+            {% if tag %}<input type="hidden" name="tag" value="{{ tag }}">{% endif %}
+        </form>
+    </div>
+</div>
+
+<script>
+    function openCreatePostModal() {
+        document.getElementById('create-post-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeCreatePostModal() {
+        document.getElementById('create-post-modal').style.display = 'none';
+        document.body.style.overflow = '';
+        clearModalTagSelection();
+    }
+    // Tag icon selection logic
+    const tagIcons = document.querySelectorAll('.modal-tag-icon');
+    const selectedTagInput = document.getElementById('modal-selected-tag');
+    tagIcons.forEach(icon => {
+        icon.addEventListener('click', function () {
+            tagIcons.forEach(i => i.classList.remove('modal-tag-selected'));
+            this.classList.add('modal-tag-selected');
+            selectedTagInput.value = this.getAttribute('data-tag');
+        });
+    });
+    function clearModalTagSelection() {
+        tagIcons.forEach(i => i.classList.remove('modal-tag-selected'));
+        selectedTagInput.value = '';
+    }
+    function openZipModal() {
+        document.getElementById('zip-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => { document.getElementById('zip-input').focus(); }, 100);
+    }
+    function closeZipModal() {
+        document.getElementById('zip-modal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+</script>
 {% endblock %}

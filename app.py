@@ -41,7 +41,22 @@ def home():
 @app.route('/forum', methods=['GET', 'POST'])
 def forum():
     from database import add_forum_post, get_all_forum_posts
-    posts = get_all_forum_posts()
+    sort = request.args.get('sort', 'popular')
+    tag = request.args.get('tag')
+    zipcode = request.args.get('zipcode', session.get('forum_zipcode', '95112'))
+    session['forum_zipcode'] = zipcode
+    q = request.args.get('q', '').strip()
+    sort_map = {
+        'popular': 'newest',
+        'newest': 'newest',
+        'oldest': 'oldest',
+        'title': 'title',
+    }
+    posts = get_all_forum_posts(sort=sort_map.get(sort, 'newest'), zipcodes=zipcode)
+    if tag:
+        posts = [p for p in posts if p['category'] == tag]
+    if q:
+        posts = [p for p in posts if q.lower() in p['title'].lower() or q.lower() in p['content'].lower()]
     if request.method == 'POST':
         if 'user_id' not in session:
             flash("You must be logged in to post a message.", "flash-error")
@@ -50,6 +65,7 @@ def forum():
         category = request.form.get('category')
         image_url = request.form.get('image_url')
         content = request.form.get('content')
+        post_zipcode = request.form.get('zipcode', zipcode)
         uploaded_image = None
         if 'uploaded_image' in request.files:
             file = request.files['uploaded_image']
@@ -58,10 +74,10 @@ def forum():
                 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 uploaded_image = filename
-        add_forum_post(session['user_id'], session['user_name'], title, category, image_url, uploaded_image, content)
+        add_forum_post(session['user_id'], session['user_name'], title, category, image_url, uploaded_image, content, post_zipcode)
         flash("Your post has been submitted!", "flash-success")
-        return redirect(url_for('forum'))
-    return render_template('forum.html', posts=posts)
+        return redirect(url_for('forum', zipcode=zipcode))
+    return render_template('forum.html', posts=posts, sort=sort, tag=tag, zipcode=zipcode, q=q)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
