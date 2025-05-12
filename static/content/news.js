@@ -104,8 +104,13 @@ function initPage() {
             break;
     }
     document.getElementById("page-nav").insertAdjacentHTML("beforeend", "<p> ... </p>");
-
     let nPages = Math.ceil(articleData.totalResults / articlesPerPage);
+    for (var i = currentPage - 2; i < currentPage + 2; i++) {
+        if (i < 3 || i > nPages - 3)
+            continue;
+        document.getElementById("page-nav").insertAdjacentHTML("beforeend", `<a href="javascript:loadArticles(${i + 1}, 25)"> ${i+1} </a>`);
+    }
+    document.getElementById("page-nav").insertAdjacentHTML("beforeend", "<p> ... </p>");
     for (var i = nPages - 3; i < nPages; i++) {
         document.getElementById("page-nav").insertAdjacentHTML("beforeend", `<a href="javascript:loadArticles(${i + 1}, 25)"> ${i+1} </a>`);
     }
