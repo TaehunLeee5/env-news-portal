@@ -1,6 +1,5 @@
 import requests
 import os
-from flask import jsonify
 
 __newsorgAPIKey = os.getenv("newsorgAPIKey")
 

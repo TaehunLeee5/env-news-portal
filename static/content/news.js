@@ -4,13 +4,13 @@ const articlesOnScroll = 10;
 const articlesPerPage = 100;
 
 var currentArticlesLoaded = 0;
-var currentPage = 0;
+var currentPage = 1;
 var loading = true;
 var articleRetrievalSuccess = false;
 var articleData = null;
 
 if ((articleData = LocalStorage.getItem("articleData")) == null) {
-    getNewsArticles(pageNumber).then(function(data) {
+    getNewsArticles(1).then(function(data) {
         articleData = data;
         document.getElementById("result-count").textContent = `Result Count: ${articleData.totalResults}`;
         loadArticles(currentPage, 25); //initally load 25 articles on page for now, load more on scroll later
@@ -18,6 +18,8 @@ if ((articleData = LocalStorage.getItem("articleData")) == null) {
         articleRetrievalSuccess = true;
         loading = false;
         LocalStorage.setItem("articleData", JSON.stringify(articleData));
+
+        console.log("articles found:" + articleData.articles.length);
         initPage();
     });
 } else {
@@ -29,11 +31,10 @@ if ((articleData = LocalStorage.getItem("articleData")) == null) {
     initPage();
 }
 
-console.log("length:" + articleData.articles.length);
 async function getNewsArticles(pageNumber) {
     try {
         let req = new FormData();
-        req.append("pageNumber", pageNumber + 1);
+        req.append("pageNumber", pageNumber);
         const response = await fetch("/news", {method:"POST", body:req});
         if (!response.ok) {
           throw new Error(`Failed to get news articles: ${response.status}`);
@@ -57,12 +58,9 @@ async function loadArticles(pageNumber, nArticles) {
         currentArticlesLoaded = 0;
     }
     var listHtml = "";
-    articlesToLoad = Math.min(articleData.articles.length, nArticles); 
-            console.log(articlesToLoad);
+    articlesToLoad = Math.min(articleData.articles.length - currentArticlesLoaded, nArticles); 
 
     for (var i = 0; i < articlesToLoad; i++) {
-        console.log(currentArticlesLoaded + i);
-        console.log("len:" + articleData.articles.length);
         const article = articleData.articles[currentArticlesLoaded + i];
 
         listHtml += `
@@ -71,9 +69,10 @@ async function loadArticles(pageNumber, nArticles) {
                     <img src="${article.urlToImage}">
                 </section>
                 <section class="news-details">
-                    <a href="${article.url}">
+                    <a href="${article.url}" target="_blank">
                         <h3>${article.title}</h3>
                     </a>
+                    <p>Source: ${article.source.name != null ? article.source.name : "Unknown"}</p> 
                     <p>Author: ${article.author != null ? article.author : "Unknown"}</p>
                     <p>Date: ${article.publishedAt}</p>
                     <p>${article.description}</p>
@@ -98,14 +97,19 @@ function initPage() {
         }
     });
 
-    for (var i = 0; i < 3; i++) {
-        document.getElementById("page-nav").insertAdjacentHTML("beforeend", `<a href="javascript:loadArticles(${i + 1}, 25)"> ${i+1} </a>`);
+    //due to current api limitations max number of pages that can be shown is 5
+    for (var i = 0; i < 5; i++) {
+        if (currentPage - 1 == i) 
+            document.getElementById("page-nav").insertAdjacentHTML("beforeend", `<b> ${i + 1} </b>`);
+        else
+            document.getElementById("page-nav").insertAdjacentHTML("beforeend", `<a href="javascript:loadArticles(${i + 1}, 25)"> ${i + 1} </a>`);
         if (articleData.totalResults < (i + 1) * articlesPerPage)
             break;
     }
-    document.getElementById("page-nav").insertAdjacentHTML("beforeend", "<p> ... </p>");
+    /* 
     let nPages = Math.ceil(articleData.totalResults / articlesPerPage);
-    for (var i = currentPage - 2; i < currentPage + 2; i++) {
+    for (var i = currentPage - 3; i < currentPage + 3; i++) {
+        console.log(i);
         if (i < 3 || i > nPages - 3)
             continue;
         document.getElementById("page-nav").insertAdjacentHTML("beforeend", `<a href="javascript:loadArticles(${i + 1}, 25)"> ${i+1} </a>`);
@@ -114,4 +118,5 @@ function initPage() {
     for (var i = nPages - 3; i < nPages; i++) {
         document.getElementById("page-nav").insertAdjacentHTML("beforeend", `<a href="javascript:loadArticles(${i + 1}, 25)"> ${i+1} </a>`);
     }
+    */
 }
