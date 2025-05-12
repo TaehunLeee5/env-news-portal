@@ -1,12 +1,18 @@
+#python /Users/tae/Desktop/EnvironmentalNewsPortal/app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 import requests #used for external API calls; this is different from flask.request
 import weather_service
 import events_service
-import news_service
+import database
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Change this in production!
+
+# Initialize the database
+database.init_db()
 
 # Dummy user data (you can replace with a real database)
 dummy_user = {
@@ -14,6 +20,13 @@ dummy_user = {
     'password': 'password123',
     'name': 'John Doe'
 }
+
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.context_processor
 def inject_now():
@@ -23,6 +36,31 @@ def inject_now():
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/forum', methods=['GET', 'POST'])
+def forum():
+    from database import add_forum_post, get_all_forum_posts
+    posts = get_all_forum_posts()
+    if request.method == 'POST':
+        if 'user_id' not in session:
+            flash("You must be logged in to post a message.", "flash-error")
+            return redirect(url_for('login'))
+        title = request.form.get('title')
+        category = request.form.get('category')
+        image_url = request.form.get('image_url')
+        content = request.form.get('content')
+        uploaded_image = None
+        if 'uploaded_image' in request.files:
+            file = request.files['uploaded_image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                uploaded_image = filename
+        add_forum_post(session['user_id'], session['user_name'], title, category, image_url, uploaded_image, content)
+        flash("Your post has been submitted!", "flash-success")
+        return redirect(url_for('forum'))
+    return render_template('forum.html', posts=posts)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -36,9 +74,13 @@ def signup():
             flash("Passwords do not match. Please try again.", "flash-error")
             return render_template('signup.html')
 
-        # Here, you'd typically save the user to a database
-        flash("Sign up successful! Please log in.", "flash-success")
-        return redirect(url_for('login'))
+        # Create new user in database
+        if database.create_user(name, email, password):
+            flash("Sign up successful! Please log in.", "flash-success")
+            return redirect(url_for('login'))
+        else:
+            flash("Email already exists. Please use a different email.", "flash-error")
+            return render_template('signup.html')
 
     return render_template('signup.html')
 
@@ -48,9 +90,10 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        if email == dummy_user['email'] and password == dummy_user['password']:
-            session['user_id'] = email
-            session['user_name'] = dummy_user['name']
+        user = database.verify_user(email, password)
+        if user:
+            session['user_id'] = user['id']
+            session['user_name'] = user['name']
             flash("Logged in successfully!", "flash-success")
             return redirect(url_for('home'))
         else:
@@ -95,11 +138,6 @@ def events():
     
     return render_template('events.html')
 
-@app.route('/news', methods=['GET','POST'])
-def news():
-    if request.method == "POST":
-        return news_service.getNewsHeadlines()
-    return render_template('news.html')
-
 if __name__ == '__main__':
     app.run(debug=True)
+

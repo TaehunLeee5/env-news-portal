@@ -51,10 +51,13 @@
     <div class="header">
         <div class="title">Environmental News Portal</div>
         <div class="nav">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('forum') }}">Forum</a>
             {% if 'user_id' in session %}
-                <a href="{{ url_for('post_article') }}">Post Article</a> | <a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a>
+                <a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a>
             {% elif request.path not in ['/login', '/signup'] %}
-                <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('signup') }}">Sign Up</a>
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('signup') }}">Sign Up</a>
             {% endif %}
         </div>
     </div>
@@ -66,3 +69,4 @@
 
 </body>
 </html>
+

@@ -74,19 +74,40 @@ For testing purposes, you can use the following credentials:
 ## Project Structure
 
 ```
-env-news-portal/
-├── app.py                  # Main application file
-├── requirements.txt        # Python dependencies
-├── static/                 # Static files (CSS, JS, images)
+EnvironmentalNewsPortal/
+├── app.py                        # Main Flask application
+├── database.py                   # Handles SQLite DB setup and user operations
+├── database.db                   # SQLite database file
+├── events_service.py             # Handles events-related API logic
+├── geolocator_service.py         # Geolocation-related logic
+├── weather_service.py            # Weather-related logic
+├── requirements.txt              # List of required Python packages
+├── README.md                     # Project overview and setup instructions
+├── .gitignore                    # Files/directories to ignore in version control
+├── instance/                     # Flask instance folder (if used for configs)
+├── mockups/                      # UI mockup images (PNG/PSD)
+│   ├── createpost.png
+│   ├── forum.png
+│   ├── login.png
+│   ├── map.png
+│   ├── mockup.psd
+│   ├── notifications.png
+│   └── signup.png
+├── static/                       # Static files like JS, CSS, images
 │   └── content/
-│       ├── signup.js       # Signup form validation
-│       └── site.css        # Custom CSS styles
-└── templates/              # HTML templates
-    ├── index.html          # Home page
-    ├── login.html          # Login page
-    ├── signup.html         # Signup page
-    ├── post_article.html   # Article posting page
-    └── news.html           # News display page
+│       ├── site.css              # Stylesheet
+│       └── signup.js             # JS for signup validation (if implemented)
+├── templates/                    # HTML templates
+│   ├── index.html
+│   ├── login.html
+│   ├── signup.html
+│   ├── post_article.html
+│   ├── forum.html
+│   ├── events.html
+│   ├── map_test.html
+│   └── news.html
+└── venv/                         # Python virtual environment (excluded in .gitignore)
+
 ```
 
 ## Technologies Used
