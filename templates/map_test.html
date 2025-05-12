@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <style>
-        #map { height: 600px; width: 800px}
-    </style>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>
+    <head>
+        <style>
+            #map { height: 600px; width: 800px}
+        </style>
+
+        <script>
+            function loadLocalLeafletCss() {
+                document.write("<link rel='stylesheet' href='{{url_for('static', filename='content/libs/leaflet/leaflet.css')}}'/>");
+            }
+            function loadLocalLeafletJs() {
+                document.write("<script src='{{url_for('static', filename='content/libs/leaflet/leaflet.js')}}'><\/script>");
+            }
+        </script>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css ee"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="" onerror="loadLocalLeafletCss()"/>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js ee"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="" onerror="loadLocalLeafletJs()"></script>
+    </head>
     <body>
         <div id="map"></div>
         <p id="weatherInfo"></p>    
     </body>
     <script src="{{url_for('static', filename='content/map_test.js')}}"></script>
-</head>
+</html>

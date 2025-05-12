@@ -4,8 +4,7 @@ getNewsArticles().then(function(data) {
     var listHtml = "";
     var i = 0;
     for (const article of data.articles) {
-        console.log(article);
-        if (i == 25)
+        if (i == 25) //max 25 articles on page for now.
             break;
         i++;
         listHtml += `

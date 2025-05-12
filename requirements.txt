@@ -7,3 +7,4 @@ click==8.1.7
 requests
 python-dotenv
 beautifulsoup4
+flask-caching
