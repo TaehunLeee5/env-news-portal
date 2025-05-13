@@ -1,13 +1,12 @@
 import requests
 import os
-from flask import jsonify
 
 __newsorgAPIKey = os.getenv("newsorgAPIKey")
 
-def getNewsHeadlines():
+def getNewsHeadlines(pageNumber):
     language = "en"
     sort = "relevancy"
-    testLink = "https://newsapi.org/v2/everything?q=climate&sortBy={sort}&apiKey={apiKey}&language={language}".format(language=language, sort=sort, apiKey=__newsorgAPIKey)
+    testLink = "https://newsapi.org/v2/everything?q=climate&sortBy={sort}&apiKey={apiKey}&language={language}&page={pageNumber}".format(language=language, sort=sort, apiKey=__newsorgAPIKey, pageNumber=pageNumber)
     print(testLink)
     newsData = requests.get(testLink)
 

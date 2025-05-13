@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
 //may be replaced with html pattern attribute if detailed feedback isn't necessary
 function validateName(name) {
     var errorMsg = "";
@@ -26,9 +22,6 @@ function validateEmail(email) {
 
 function validatePassword(pw) {
     var errorMsg = "";
-<<<<<<< HEAD
-    // No password requirements - allow any password
-=======
 
     if (pw.length < 6)
         errorMsg = errorMsg.concat("Your password must contain at least 6 characters.\n");
@@ -41,7 +34,6 @@ function validatePassword(pw) {
     if (pw.search("[A-Z]+") == -1)
         errorMsg = errorMsg.concat("Your password must contain at least 1 uppercase letter.");
 
->>>>>>> 8fb666720a55fed81a495061f1130c0da4ca293b
     return errorMsg;
 }
 
