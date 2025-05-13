@@ -104,7 +104,7 @@ EnvironmentalNewsPortal/
 │   ├── post_article.html
 │   ├── forum.html
 │   ├── events.html
-│   ├── map_test.html
+│   ├── weather.html
 │   └── news.html
 └── venv/                         # Python virtual environment (excluded in .gitignore)
 

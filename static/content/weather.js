@@ -54,9 +54,11 @@ navigator.geolocation.getCurrentPosition(
     }
 );
 
-function updateWeatherInfo(map, lat, lon) {
+async function updateWeatherInfo(map, lat, lon) {
+  var state = null;
+  var city = null;
   //get weather data from weather.gov
-  getData(lat, lon).then(function(data) {
+  await getData("weather", lat, lon).then(function(data) {
     var weatherText = "The temperature in " + data.city + ", " + data.state + ", is currently " + data.temperature + "\u00B0F<br />"
       + data.city + "'s Air Quality Index is currently " + data.aqi + "<br /><br />Weekly weather forecast for " + data.city + ":<br />";
 
@@ -82,24 +84,36 @@ function updateWeatherInfo(map, lat, lon) {
 
     var polygon = L.polygon(polyCoords).addTo(map);
     polygon.bindPopup(data.city); //polygon region label
+
+    state = data.state;
+    city = data.city;
+  }).catch(function() {
+    document.getElementById("weatherInfo").textContent= "Failed to get weather data"
+  });
+
+  getData("alerts", lat, lon).then(function(data) {
+    if (state != null && city != null)
+      document.getElementById("alertHeader").textContent = `Active Alerts for ${city}, ${state}:`
+    if (data.features.length === 0)
+      document.getElementById("alertInfo").textContent = "There are no currently active alerts"
+
+
+  }).catch(function(reason) {
+    console.log(reason);
+    document.getElementById("alertInfo").textContent = "Failed to get alert info"
   });
 }
 
-async function getData(lat, lon) {
-  try {
-    let req = new FormData()
-    req.append("lat", lat);
-    req.append("lon", lon);
-    const response = await fetch("/map_test", {method:"POST", body:req});
-    if (!response.ok) {
-      document.getElementById("weatherInfo").innerHTML = "Failed to get weather data"
-      throw new Error(`Failed to obtain weather data: ${response.status}`);
-    }
-    data = await response.json()
-    return data;
-
-  } catch (error) {
-    console.error(error.message);
+async function getData(reqType, lat, lon) {
+  let req = new FormData()
+  req.append("reqType", reqType);
+  req.append("lat", lat);
+  req.append("lon", lon);
+  const response = await fetch("/weather", {method:"POST", body:req});
+  if (!response.ok) {
+    throw new Error(`Failed to obtain ${reqType} data: ${response.status}`);
   }
+  data = await response.json()
+  return data;
 }
     

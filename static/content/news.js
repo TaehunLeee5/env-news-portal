@@ -9,6 +9,7 @@ var loading = true;
 var articleRetrievalSuccess = false;
 var articleData = null;
 
+LocalStorage.clear();
 if ((articleData = LocalStorage.getItem("articleData")) == null) {
     getNewsArticles(1).then(function(data) {
         articleData = data;

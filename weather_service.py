@@ -32,3 +32,11 @@ def getWeatherData(lat, lon):
         pollutantInfo = pollutantInfo.json()
         data['pollutantInfo'] = pollutantInfo['list'][0]['components']
     return data
+
+def getAlertData(lat, lon):
+    data = {}
+    alertInfo = requests.get("https://api.weather.gov/alerts/active?point=" + lat + "," + lon)
+    if alertInfo.ok:
+        data = alertInfo.content
+    
+    return data
