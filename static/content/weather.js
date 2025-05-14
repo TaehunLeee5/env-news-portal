@@ -1,4 +1,8 @@
+var forecastZoneLayer = null;
+var alertRegionMapLayer = null;
 
+var alertData = null;
+var map = null;
 navigator.geolocation.getCurrentPosition(
     (position) => {
         //get user's current location
@@ -8,7 +12,7 @@ navigator.geolocation.getCurrentPosition(
         console.log(`Latitude: ${lat}, longitude: ${lng}`);
 
         //draw map centered at location at zoom level
-        var map = L.map('map').setView([lat, lng], 13);
+        map = L.map('map').setView([lat, lng], 13);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -18,45 +22,35 @@ navigator.geolocation.getCurrentPosition(
         var marker = L.marker([lat,lng]).addTo(map);
         marker.bindPopup(`<b>You are here!</b><br> Latitude ${lat}, Longitude: ${lng}`).openPopup();
 
+        /*
         var popup = L.popup();
         function onMapClick(e) {
             popup
                 .setLatLng(e.latlng)
                 .setContent("You clicked the map at " + e.latlng.toString())
                 .openOn(map);
-            document.getElementById('weatherInfo').innerHTML = "Retrieving weather info...";
-            updateWeatherInfo(map, e.latlng.lat, e.latlng.lng);
+            document.getElementById('weatherInfo').textContent = "Retrieving weather info...";
+            document.getElementById('activeAlertInfo').textContent = "Retrieving alert info...";
+            updateWeatherInfo(e.latlng.lat, e.latlng.lng);
         }
 
         map.on('click', onMapClick);
-
-        updateWeatherInfo(map, lat, lng);
-        /*
-        //draw a circular region
-        var circle = L.circle([37.327, -121.8853], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 500
-        }).addTo(map);
-
-        /draw a polygonal region
-        var polygon = L.polygon([
-            [37.3484, -121.9053],
-            [37.3386, -121.8753],
-            [37.3588, -121.8873]
-        ]).addTo(map);
-        circle.bindPopup("I am a circle."); //circle region label
         */
+
+        updateWeatherInfo(lat, lng);
     },
     (error) => {
         console.error("Error getting user location:", error);
     }
 );
 
-async function updateWeatherInfo(map, lat, lon) {
+async function updateWeatherInfo(lat, lon) {
   var state = null;
   var city = null;
+
+  if (forecastZoneLayer != null)
+    map.removeLayer(forecastZoneLayer);
+
   //get weather data from weather.gov
   await getData("weather", lat, lon).then(function(data) {
     var weatherText = "The temperature in " + data.city + ", " + data.state + ", is currently " + data.temperature + "\u00B0F<br />"
@@ -67,14 +61,6 @@ async function updateWeatherInfo(map, lat, lon) {
           + period.windSpeed + " " + period.windDirection + "<br />";
     }
 
-    weatherText += "<br /> Detailed air quality info for " + data.city + ": <br />"
-      + "Carbon monoxide (CO): " + data.pollutantInfo.co + " \u03BCg/m<sup>3</sup> <br />"
-      + "Nitrogen dioxide (NO<sub>2</sub>) " + data.pollutantInfo.no2 + "\u03BCg/m<sup>3</sup> <br />"
-      + "Fine Particulate Matter (PM<sub>2.5</sub>)" + data.pollutantInfo.pm2_5 + "\u03BCg/m<sup>3</sup> <br />"
-      + "Large Particulate Matter (PM<sub>10</sub>)" + data.pollutantInfo.pm10 + "\u03BCg/m<sup>3</sup> <br />"
-      + "Ozone (O<sub>3</sub>)" + data.pollutantInfo.o3 + "\u03BCg/m<sup>3</sup>" + "<br />"
-      + "Sulphur dioxide (SO<sub>2</sub>)" + data.pollutantInfo.so2 + "\u03BCg/m<sup>3</sup>" + "<br />"
-      + "Humidity: " + data.pollutantAqi.h.v + "%";
     document.getElementById('weatherInfo').innerHTML = weatherText;
 
     //swap lon and lat index positions
@@ -82,38 +68,94 @@ async function updateWeatherInfo(map, lat, lon) {
     for (const pos of data.geometry.coordinates[0])
       polyCoords.push([pos[1], pos[0]])
 
-    var polygon = L.polygon(polyCoords).addTo(map);
-    polygon.bindPopup(data.city); //polygon region label
+    forecastZoneLayer = L.polygon(polyCoords).addTo(map);
+    forecastZoneLayer.bindPopup(data.city); //polygon region label
 
     state = data.state;
     city = data.city;
-  }).catch(function() {
-    document.getElementById("weatherInfo").textContent= "Failed to get weather data"
+  }).catch(function(reason) {
+    console.log(reason);
+    document.getElementById("weatherInfo").textContent= "Failed to get weather data";
   });
 
-  getData("alerts", lat, lon).then(function(data) {
+  await getData("alerts", lat, lon).then(function(data) {
+    alertData = data;
     if (state != null && city != null)
-      document.getElementById("alertHeader").textContent = `Active Alerts for ${city}, ${state}:`
+      document.getElementById("activeAlertHeader").textContent = `Active Alerts for ${city}, ${state}:`;
     if (data.features.length === 0)
-      document.getElementById("alertInfo").textContent = "There are no currently active alerts"
+      document.getElementById("activeAlertInfo").textContent = "There are no currently active alerts";
 
+    var activeAlertHTML = ""
+    for (var i = 0; i < data.features.length; i++) {
+      var alertInfo = data.features[i].properties;
+      activeAlertHTML += `
+        <a id="activeAlertLink${i}" href="javascript:displayAlertInfo(${i})">${alertInfo.headline}</a>
+        <br>
+      `
+    }
+    document.getElementById("activeAlertInfo").insertAdjacentHTML("beforeend", activeAlertHTML);
 
   }).catch(function(reason) {
     console.log(reason);
-    document.getElementById("alertInfo").textContent = "Failed to get alert info"
+    document.getElementById("activeAlertInfo").textContent = "Failed to get alert info";
   });
 }
 
-async function getData(reqType, lat, lon) {
+async function getData(reqType, lat, lon, zones = "") {
   let req = new FormData()
   req.append("reqType", reqType);
   req.append("lat", lat);
   req.append("lon", lon);
+  req.append("zones", zones);
   const response = await fetch("/weather", {method:"POST", body:req});
   if (!response.ok) {
     throw new Error(`Failed to obtain ${reqType} data: ${response.status}`);
   }
   data = await response.json()
   return data;
+}
+
+async function displayAlertInfo(idx) {
+  var alertInfo = alertData.features[idx];
+  var descElem = document.getElementById("activeAlertContainer");
+
+  if (descElem != null)
+    descElem.remove();
+  if (alertRegionMapLayer != null)
+    map.removeLayer(alertRegionMapLayer);
+
+  var polygons = []
+  if (alertInfo.geometry != null) {
+    for (const pos of alertInfo.geometry.coordinates[0]) {
+      var polyCoords = []
+      polyCoords.push([pos[1], pos[0]])
+      polygons.push(L.polygon(polyCoords, {color: 'red'}));
+    }
+  } else {
+    await getData("zoneInfo", "", "", alertInfo.properties.affectedZones).then(function(data) {
+      for (const zone of data) {
+        var polyCoords = []
+        for (const pos of zone)
+          polyCoords.push([pos[1], pos[0]])
+        polygons.push(L.polygon(polyCoords, {color: 'red'}));
+      }
+    }).catch(function(reason) {
+      console.log(reason);
+    })
+  }
+
+  alertRegionMapLayer = L.featureGroup(polygons).addTo(map);
+  alertRegionMapLayer.bindPopup(`${alertInfo.properties.event}: ${alertInfo.properties.areaDesc}`); //polygon region label
+  map.fitBounds(alertRegionMapLayer.getBounds());
+
+  document.getElementById(`activeAlertLink${idx}`).insertAdjacentHTML("afterend", `
+    <div id="activeAlertContainer">
+      <h4> ${alertInfo.properties.event}:</h4>
+      <p id="alertType"> Alert Type: ${alertInfo.properties.messageType}</p>
+      <p id="alertSeverity"> Alert Severity: ${alertInfo.properties.severity}
+      <p id="alertDescription">Description: ${alertInfo.properties.description}</p>
+      <p id="alertAdvisory">Advisory: ${alertInfo.properties.instruction}</p>
+    </div>
+  `);
 }
     

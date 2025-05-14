@@ -35,8 +35,26 @@ def getWeatherData(lat, lon):
 
 def getAlertData(lat, lon):
     data = {}
+    #alertInfo = requests.get("https://api.weather.gov/alerts/active?area=CA") #for testing purposes
     alertInfo = requests.get("https://api.weather.gov/alerts/active?point=" + lat + "," + lon)
     if alertInfo.ok:
         data = alertInfo.content
     
+    return data
+
+# possible future implementations: 
+# check if link is an actual zone link from weather.gov (link validation)
+# proper error message handling for when a req for a zone fails
+def getWeatherZoneGeometry(zones):
+    data = []
+
+    for zoneLink in zones.split(","):
+        zoneGeomData = requests.get(zoneLink)
+        if zoneGeomData.ok:
+            zoneGeomData = zoneGeomData.json()
+            zoneCoords = []
+            for coords in zoneGeomData['geometry']['coordinates'][0]:
+                zoneCoords.append(coords)
+            data.append(zoneCoords)
+
     return data

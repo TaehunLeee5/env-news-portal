@@ -63,7 +63,6 @@ async function loadArticles(pageNumber, nArticles) {
 
     for (var i = 0; i < articlesToLoad; i++) {
         const article = articleData.articles[currentArticlesLoaded + i];
-
         listHtml += `
             <section class="news-card">
                 <section class="news-thumbnail">

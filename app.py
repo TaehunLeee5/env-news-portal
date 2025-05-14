@@ -123,11 +123,13 @@ def weather():
         reqType = request.form.get('reqType')
         lat = request.form.get('lat')
         lon = request.form.get('lon')
-
+        zones = request.form.get('zones')
         if reqType == 'weather':
             return weather_service.getWeatherData(lat, lon)
         elif reqType == 'alerts':
             return weather_service.getAlertData(lat, lon)
+        elif reqType == 'zoneInfo':
+            return weather_service.getWeatherZoneGeometry(zones)
     
     return render_template('weather.html')
 
