@@ -10,17 +10,10 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Change this in production!
+app.secret_key = os.getenv("aqicnAPIKey")  # Change this in production!
 
 # Initialize the database
 database.init_db()
-
-# Dummy user data (you can replace with a real database)
-dummy_user = {
-    'email': 'test@example.com',
-    'password': 'password123',
-    'name': 'John Doe'
-}
 
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -133,7 +126,6 @@ def weather():
     
     return render_template('weather.html')
 
-#NOTE: need to implement form input validation to prevent security risks
 @app.route('/events', methods=['GET','POST'])
 def events():
     if request.method == 'POST':

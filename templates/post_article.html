@@ -2,8 +2,9 @@
 
 {% block content %}
 <div class="post-container">
+    {% if 'user_id' in session %}
     <h2>Post a New Article</h2>
-    <form method="POST" action="{{ url_for('post_article') }}">
+    <form method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" id="title" name="title" required>
@@ -13,10 +14,9 @@
             <select id="category" name="category" required>
                 <option value="Climate Change">Climate Change</option>
                 <option value="Conservation">Conservation</option>
-                <option value="Sustainability">Sustainability</option>
-                <option value="Renewable Energy">Renewable Energy</option>
-                <option value="Wildlife">Wildlife</option>
                 <option value="Pollution">Pollution</option>
+                <option value="Wildlife">Wildlife</option>
+                <option value="Other">Other</option>
             </select>
         </div>
         <div class="form-group">
@@ -24,10 +24,17 @@
             <input type="url" id="image_url" name="image_url">
         </div>
         <div class="form-group">
-            <label for="content">Content</label>
-            <textarea id="content" name="content" rows="15" required></textarea>
+            <label for="uploaded_image">Upload Image (optional)</label>
+            <input type="file" id="uploaded_image" name="uploaded_image" accept="image/*">
         </div>
-        <button type="submit">Publish Article</button>
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="8" required></textarea>
+        </div>
+        <button type="submit" class="publish-btn">Publish Article</button>
     </form>
+    {% else %}
+    <p style="text-align:center;margin-top:30px;">Log in to post your own article.</p>
+    {% endif %}
 </div>
 {% endblock %}
