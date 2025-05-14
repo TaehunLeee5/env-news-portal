@@ -4,70 +4,91 @@ var alertRegionMapLayer = null;
 var alertData = null;
 var map = null;
 navigator.geolocation.getCurrentPosition(
-    (position) => {
-        //get user's current location
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+  (position) => {
+    //get user's current location
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
 
-        console.log(`Latitude: ${lat}, longitude: ${lng}`);
+    console.log(`Latitude: ${lat}, longitude: ${lng}`);
 
-        //draw map centered at location at zoom level
-        map = L.map('map').setView([lat, lng], 13);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+    //draw map centered at location at zoom level
+    map = L.map('map').setView([lat, lng], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
 
-        //create a marker and label at location
-        var marker = L.marker([lat,lng]).addTo(map);
-        marker.bindPopup(`<b>You are here!</b><br> Latitude ${lat}, Longitude: ${lng}`).openPopup();
+    //create a marker and label at location
+    var marker = L.marker([lat, lng]).addTo(map);
+    marker.bindPopup(`<b>You are here!</b><br> Latitude ${lat}, Longitude: ${lng}`).openPopup();
 
-        /*
-        var popup = L.popup();
-        function onMapClick(e) {
-            popup
-                .setLatLng(e.latlng)
-                .setContent("You clicked the map at " + e.latlng.toString())
-                .openOn(map);
-            document.getElementById('weatherInfo').textContent = "Retrieving weather info...";
-            document.getElementById('activeAlertInfo').textContent = "Retrieving alert info...";
-            updateWeatherInfo(e.latlng.lat, e.latlng.lng);
-        }
-
-        map.on('click', onMapClick);
-        */
-        
-        // Hide loading message after map is initialized
-        document.getElementById('loadingMessage').style.display = 'none';
-
-        updateWeatherInfo(lat, lng);
-    },
-    (error) => {
-        console.error("Error getting user location:", error);
-        // Hide loading message even if there's an error
-        document.getElementById('loadingMessage').style.display = 'none';
-        document.getElementById('weatherInfo').innerHTML = "Error getting your location. Please enable location services and refresh the page.";
+    /*
+    var popup = L.popup();
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng)
+            .setContent("You clicked the map at " + e.latlng.toString())
+            .openOn(map);
+        document.getElementById('weatherInfo').textContent = "Retrieving weather info...";
+        document.getElementById('activeAlertInfo').textContent = "Retrieving alert info...";
+        updateWeatherInfo(e.latlng.lat, e.latlng.lng);
     }
+
+    map.on('click', onMapClick);
+    */
+
+    // Hide loading message after map is initialized
+    document.getElementById('loadingMessage').style.display = 'none';
+
+    updateWeatherInfo(lat, lng);
+  },
+  (error) => {
+    console.error("Error getting user location:", error);
+    // Hide loading message even if there's an error
+    document.getElementById('loadingMessage').style.display = 'none';
+    document.getElementById('weatherInfo').innerHTML = "Error getting your location. Please enable location services and refresh the page.";
+  }
 );
 
 async function updateWeatherInfo(lat, lon) {
   var state = null;
   var city = null;
 
+  // Show loading message and clear previous data
+  document.getElementById('weatherLoadingMessage').style.display = 'block';
+  document.getElementById('weatherTiles').innerHTML = '';
+  document.getElementById('weatherTemp').textContent = '';
+
   if (forecastZoneLayer != null)
     map.removeLayer(forecastZoneLayer);
 
   //get weather data from weather.gov
-  await getData("weather", lat, lon).then(function(data) {
-    let weatherText = `The temperature in ${data.city}, ${data.state}, is currently ${data.temperature}\u00B0F<br />
-      ${data.city}'s Air Quality Index is currently ${data.aqi}<br /><br />Weekly weather forecast for ${data.city}:<br />`;
-
-     for (const period of data.forecastWeekly) {
-        weatherText += `${period.name}: ${period.shortForecast}, ${period.temperature}\u00B0F. Wind: 
-          ${period.windSpeed} ${period.windDirection}<br />`;
+  await getData("weather", lat, lon).then(function (data) {
+    // Hide loading message
+    document.getElementById('weatherLoadingMessage').style.display = 'none';
+    // Set temperature
+    document.getElementById('weatherTemp').textContent = `${data.temperature}\u00B0F in ${data.city}, ${data.state}`;
+    // Set AQI
+    document.getElementById('weatherAQI').textContent = `AQI: ${data.aqi}`;
+    // Build weekly forecast tiles
+    let tilesHtml = '';
+    for (const period of data.forecastWeekly) {
+      // Pick weather icon class based on shortForecast
+      let iconClass = getWeatherIconClass(period.shortForecast);
+      // Wind direction arrow (Font Awesome)
+      let windDir = period.windDirection || '';
+      let windArrow = getWindArrowIcon(windDir);
+      tilesHtml += `
+        <div class="weather-tile">
+          <div class="tile-day">${period.name}</div>
+          <i class="wi ${iconClass}"></i>
+          <div class="tile-temp">${period.temperature}&deg;F</div>
+          <div class="tile-wind"><i class="fa-solid fa-wind"></i> ${period.windSpeed} <span title="${windDir}">${windArrow}</span></div>
+        </div>
+      `;
     }
-
-    document.getElementById('weatherInfo').innerHTML = weatherText;
+    document.getElementById('weatherTiles').innerHTML = tilesHtml;
+    document.getElementById('weatherInfo').style.display = 'none';
 
     //swap lon and lat index positions
     var polyCoords = []
@@ -79,13 +100,14 @@ async function updateWeatherInfo(lat, lon) {
 
     state = data.state;
     city = data.city;
-  }).catch(function(reason) {
+  }).catch(function (reason) {
+    document.getElementById('weatherLoadingMessage').style.display = 'none';
     console.log(reason);
-    document.getElementById("weatherInfo").textContent= "Failed to get weather data";
+    document.getElementById("weatherInfo").textContent = "Failed to get weather data";
   });
 
   //getting alert data from weather.gov
-  await getData("alerts", lat, lon).then(function(data) {
+  await getData("alerts", lat, lon).then(function (data) {
     alertData = data;
     if (state != null && city != null)
       document.getElementById("activeAlertHeader").textContent = `Active Alerts for ${city}, ${state}:`;
@@ -102,7 +124,7 @@ async function updateWeatherInfo(lat, lon) {
     }
     document.getElementById("activeAlertInfo").insertAdjacentHTML("beforeend", activeAlertHTML);
 
-  }).catch(function(reason) {
+  }).catch(function (reason) {
     console.log(reason);
     document.getElementById("activeAlertInfo").textContent = "Failed to get alert info";
   });
@@ -114,7 +136,7 @@ async function getData(reqType, lat, lon, zones = "") {
   req.append("lat", lat);
   req.append("lon", lon);
   req.append("zones", zones);
-  const response = await fetch("/weather", {method:"POST", body:req});
+  const response = await fetch("/weather", { method: "POST", body: req });
   if (!response.ok) {
     throw new Error(`Failed to obtain ${reqType} data: ${response.status}`);
   }
@@ -138,17 +160,17 @@ async function displayAlertInfo(idx) {
     for (const pos of alertInfo.geometry.coordinates[0]) {
       var polyCoords = []
       polyCoords.push([pos[1], pos[0]])
-      polygons.push(L.polygon(polyCoords, {color: 'red'}));
+      polygons.push(L.polygon(polyCoords, { color: 'red' }));
     }
   } else {
-    await getData("zoneInfo", "", "", alertInfo.properties.affectedZones).then(function(data) {
+    await getData("zoneInfo", "", "", alertInfo.properties.affectedZones).then(function (data) {
       for (const zone of data) {
         var polyCoords = []
         for (const pos of zone)
           polyCoords.push([pos[1], pos[0]])
-        polygons.push(L.polygon(polyCoords, {color: 'red'}));
+        polygons.push(L.polygon(polyCoords, { color: 'red' }));
       }
-    }).catch(function(reason) {
+    }).catch(function (reason) {
       console.log(reason);
     })
   }
@@ -169,4 +191,27 @@ async function displayAlertInfo(idx) {
     </div>
   `);
 }
-    
+
+function getWeatherIconClass(shortForecast) {
+  // Simple mapping for demo; expand as needed
+  shortForecast = shortForecast.toLowerCase();
+  if (shortForecast.includes('sunny') || shortForecast.includes('clear')) return 'wi-day-sunny';
+  if (shortForecast.includes('cloudy')) return 'wi-cloudy';
+  if (shortForecast.includes('rain')) return 'wi-rain';
+  if (shortForecast.includes('snow')) return 'wi-snow';
+  if (shortForecast.includes('fog')) return 'wi-fog';
+  if (shortForecast.includes('thunder')) return 'wi-thunderstorm';
+  return 'wi-na';
+}
+
+function getWindArrowIcon(direction) {
+  // Map wind direction to Font Awesome arrow rotation
+  const dirMap = {
+    'N': 0, 'NNE': 22.5, 'NE': 45, 'ENE': 67.5,
+    'E': 90, 'ESE': 112.5, 'SE': 135, 'SSE': 157.5,
+    'S': 180, 'SSW': 202.5, 'SW': 225, 'WSW': 247.5,
+    'W': 270, 'WNW': 292.5, 'NW': 315, 'NNW': 337.5
+  };
+  let deg = dirMap[direction] || 0;
+  return `<i class='fa-solid fa-arrow-up' style='transform:rotate(${deg}deg)'></i>`;
+}

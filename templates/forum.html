@@ -120,6 +120,10 @@
 
 <script>
     function openCreatePostModal() {
+        {% if 'user_id' not in session %}
+        window.location.href = "{{ url_for('login', message='Please log in to create a post') }}";
+        return;
+        {% endif %}
         document.getElementById('create-post-modal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }

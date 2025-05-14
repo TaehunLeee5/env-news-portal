@@ -2,41 +2,42 @@
 <html>
 
 <head>
-    <title>Environmental News Portal</title>
+    <title>GrassRoots</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='content/site.css') }}">
+    <!-- Weather Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 
 <body>
     <header class="main-header">
         <div class="header-bar">
-            <div class="logo">
-                <a href="{{ url_for('home') }}" class="logo-text">grassroots.</a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('forum') }}">Community Forum</a></li>
-                <li><a href="{{ url_for('post_article') }}">Post Article</a></li>
-                <li><a href="{{ url_for('weather') }}">Map</a></li>
-                <li><a href="{{ url_for('events') }}">Events</a></li>
-                {% if 'user_id' in session %}
-                <!--<li><a href="{{ url_for('post_article') }}">Post Article</a></li>-->
-                <li><a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a></li>
-                {% elif request.path not in ['/login', '/signup'] %}
-                <li><a href="{{ url_for('login') }}">Login</a></li>
-                <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+            <a href="{{ url_for('home') }}" class="logo-text">grassroots.</a>
+            <div class="header-actions">
+                {% if 'user_id' not in session and request.path != '/login' %}
+                <a href="{{ url_for('login') }}" class="sign-in-btn">Sign In</a>
+                {% elif 'user_id' in session %}
+                <span class="user-greeting">Hi, {{ session['user_name'] }}</span>
+                <a href="{{ url_for('logout') }}" class="sign-in-btn">Logout</a>
                 {% endif %}
-        </div>
+            </div>
         </div>
         <nav class="secondary-nav">
             <ul>
-                <li><a href="{{ url_for('map_test') }}">map</a></li>
+                <li><a href="{{ url_for('weather') }}">map</a></li>
                 <li><a href="{{ url_for('forum') }}">forum</a></li>
-                <li><a href="{{ url_for('home') }}">dashboard</a></li>
+                <li><a href="{{ url_for('events') }}">events</a></li>
             </ul>
         </nav>
     </header>
 
     <div class="container">
+        {% if request.args.get('message') %}
+        <div class="auth-message">
+            {{ request.args.get('message') }}
+        </div>
+        {% endif %}
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="flashes">
@@ -51,7 +52,7 @@
     </div>
 
     <footer>
-        <p>&copy; Environmental News Portal</p>
+        <p>&copy; GrassRoots</p>
     </footer>
 </body>
 

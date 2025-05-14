@@ -10,8 +10,7 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-# app.secret_key = 'your_secret_key_here'  # Change this in production!
-app.secret_key = 'aqicnAPIKey'  # Change this in production!
+app.secret_key = os.getenv("aqicnAPIKey")  # Change this in production!
 
 # Initialize the database
 database.init_db()

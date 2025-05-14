@@ -1,41 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="dashboard-main-wrapper">
-    <div class="dashboard-header-row">
-        <h1 class="dashboard-title">Notification Dashboard</h1>
-        <a href="#" class="dashboard-manage-link">&#9881; Manage Notifications</a>
-    </div>
-    <div class="dashboard-filter-row">
-        <form method="get" id="dashboard-sort-form">
-            <select class="dashboard-filter-select" name="sort"
-                onchange="document.getElementById('dashboard-sort-form').submit()">
-                <option value="recent">Recent</option>
-                <option value="oldest">Oldest</option>
-                <option value="title">A-Z</option>
-            </select>
-        </form>
-    </div>
-    <div class="dashboard-notifications-list">
-        {% if notifications %}
-        {% for note in notifications %}
-        <div class="dashboard-notification-card">
-            <div class="dashboard-notification-header">
-                <h2 class="dashboard-notification-title">{{ note['title'] }}</h2>
-            </div>
-            <div class="dashboard-notification-body">
-                <div class="dashboard-notification-snippet">{{ note['content'][:200] }}{% if note['content']|length >
-                    200 %}...{% endif %}</div>
-            </div>
-            <div class="dashboard-notification-footer">
-                <span class="dashboard-notification-meta">{{ note['date'] }}</span>
-                <a href="#" class="dashboard-dismiss-link">Dismiss</a>
-            </div>
-        </div>
-        {% endfor %}
-        {% else %}
-        <p>No notifications yet.</p>
-        {% endif %}
-    </div>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh;">
+    <h1 class="login-title" style="margin-top: 8px;">Welcome to GrassRoots!</h1>
+    <p style="font-size: 1.25rem; color: #555; margin-top: 12px; text-align: center;">Stay updated with the latest
+        environmental news, connect with your community, and find events in your area.</p>
+    <div style="flex: 1;"></div>
 </div>
 {% endblock %}

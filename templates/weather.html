@@ -1,68 +1,200 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <style>
-            html, body {
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            #map {
-                height: 100vh;
-                width: 100vw;
-                position: absolute;
-                top: 0;
-                left: 0;
-                z-index: 1;
-            }
-            #infoPanel {
-                position: absolute;
-                bottom: 20px;
-                left: 20px;
-                background: rgba(255, 255, 255, 0.9);
-                padding: 15px;
-                border-radius: 5px;
-                max-width: 400px;
-                max-height: 80vh;
-                overflow-y: auto;
-                z-index: 2;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            }
-            #loadingMessage {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-size: 18px;
-                color: #666;
-                background: rgba(255, 255, 255, 0.9);
-                padding: 15px;
-                border-radius: 5px;
-                z-index: 3;
-            }
-        </style>
+{% extends "layout.html" %}
 
-        <script>
-            function loadLocalLeafletCss() {
-                document.write("<link rel='stylesheet' href='{{url_for('static', filename='content/libs/leaflet/leaflet.css')}}'/>");
-            }
-            function loadLocalLeafletJs() {
-                document.write("<script src='{{url_for('static', filename='content/libs/leaflet/leaflet.js')}}'><\/script>");
-            }
-            loadLocalLeafletCss();
-        </script>
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin="" onerror="loadLocalLeafletJs()"></script>
-    </head>
-    <body>
-        <div id="loadingMessage">Loading map...</div>
-        <div id="map"></div>
-        <div id="infoPanel">
-            <p id="weatherInfo"></p>    
-            <h2 id="activeAlertHeader">Active Alerts:</h2>
-            <div id="activeAlertInfo"></div>
-        </div>
-    </body>
-    <script src="{{url_for('static', filename='content/weather.js')}}"></script>
-</html>
+{% block content %}
+<style>
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #map {
+        height: 100vh;
+        width: 100vw;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    #infoPanel {
+        position: absolute;
+        bottom: 32px;
+        left: 32px;
+        background: linear-gradient(135deg, #e8f5e9 80%, #b3e5fc 100%);
+        padding: 28px 24px 20px 24px;
+        border-radius: 18px;
+        max-width: 470px;
+        max-height: 62vh;
+        overflow-y: auto;
+        z-index: 2;
+        box-shadow: 0 6px 24px rgba(60, 80, 60, 0.18), 0 1.5px 4px rgba(60, 80, 60, 0.10);
+        font-family: 'Segoe UI', 'Montserrat', Arial, sans-serif;
+        color: #23432d;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .weather-section {
+        margin-bottom: 10px;
+    }
+
+    .weather-section h3 {
+        margin: 0 0 6px 0;
+        font-size: 1.18rem;
+        font-weight: 600;
+        color: #388e3c;
+        letter-spacing: 0.01em;
+    }
+
+    .weather-temp {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #1976d2;
+        margin-bottom: 2px;
+    }
+
+    .weather-aqi {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #d32f2f;
+        margin-bottom: 6px;
+    }
+
+    .weather-forecast {
+        font-size: 1.01rem;
+        color: #23432d;
+        margin-bottom: 8px;
+    }
+
+    .divider {
+        border: none;
+        border-top: 1.5px solid #b2dfdb;
+        margin: 10px 0 8px 0;
+    }
+
+    .alert-section h3 {
+        color: #d32f2f;
+        font-size: 1.13rem;
+        margin-bottom: 4px;
+        margin-top: 0;
+    }
+
+    .alert-section {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 700px) {
+        #infoPanel {
+            left: 4vw;
+            right: 4vw;
+            max-width: 92vw;
+            padding: 16px 8px 12px 8px;
+        }
+    }
+
+    #loadingMessage {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        color: #666;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 3;
+    }
+
+    .weather-tiles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 8px;
+    }
+
+    .weather-tile {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(60, 80, 60, 0.08);
+        padding: 10px 14px 8px 14px;
+        min-width: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 1.01rem;
+        color: #23432d;
+        box-sizing: border-box;
+        margin-bottom: 0;
+    }
+
+    .weather-tile .wi,
+    .weather-tile .fa-wind {
+        font-size: 1.7em;
+        margin-bottom: 2px;
+    }
+
+    .weather-tile .tile-day {
+        font-weight: 600;
+        font-size: 1.01em;
+        margin-bottom: 2px;
+    }
+
+    .weather-tile .tile-temp {
+        font-size: 1.15em;
+        font-weight: 700;
+        color: #1976d2;
+        margin-bottom: 2px;
+    }
+
+    .weather-tile .tile-wind {
+        font-size: 0.95em;
+        color: #388e3c;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .weather-tile .fa-arrow-up {
+        font-size: 0.9em;
+        margin-left: 2px;
+    }
+</style>
+<script>
+    function loadLocalLeafletCss() {
+        document.write("<link rel='stylesheet' href='{{url_for('static', filename='content/libs/leaflet/leaflet.css')}}'/>");
+    }
+    function loadLocalLeafletJs() {
+        document.write("<script src='{{url_for('static', filename='content/libs/leaflet/leaflet.js')}}'><\/script>");
+    }
+    loadLocalLeafletCss();
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""
+    onerror="loadLocalLeafletJs()"></script>
+<div id="loadingMessage">Loading map...</div>
+<div id="map"></div>
+<div id="infoPanel">
+    <div class="weather-section">
+        <h3>Current Weather</h3>
+        <div class="weather-temp" id="weatherTemp"></div>
+        <div id="weatherLoadingMessage" style="font-size:1.1em;color:#388e3c;display:none;margin:10px 0;">Loading
+            weather info...</div>
+        <div class="weather-forecast" id="weatherInfo"></div>
+        <div class="weather-tiles" id="weatherTiles"></div>
+    </div>
+    <div class="weather-section">
+        <h3>Air Quality</h3>
+        <div class="weather-aqi" id="weatherAQI"></div>
+    </div>
+    <hr class="divider" />
+    <div class="alert-section">
+        <h3 id="activeAlertHeader">Active Alerts:</h3>
+        <div id="activeAlertInfo"></div>
+    </div>
+</div>
+<script src="{{url_for('static', filename='content/weather.js')}}"></script>
+{% endblock %}
