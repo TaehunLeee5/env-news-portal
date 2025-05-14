@@ -1,23 +1,24 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="auth-container">
-    <h2>Log In</h2>
-
-    <form method="POST" action="{{ url_for('login') }}">
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-
-        <button type="submit">Log In</button>
-    </form>
-
-    <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+<div class="login-flex-wrapper">
+    <div class="login-container">
+        <h1 class="login-title">Log In</h1>
+        <p class="login-subtext">Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <div class="form-group">
+                <label for="email" class="login-label">Email</label>
+                <input type="email" id="email" name="email" required class="login-input">
+            </div>
+            <div class="form-group">
+                <label for="password" class="login-label">Password</label>
+                <input type="password" id="password" name="password" required class="login-input">
+            </div>
+            <button type="submit" class="login-btn">Log In</button>
+        </form>
+        <a href="{{ url_for('login_google') }}" class="google-login-btn">
+            <span class="google-icon">&#xE943;</span> Log In with Google
+        </a>
+    </div>
 </div>
 {% endblock %}

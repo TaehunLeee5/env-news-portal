@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+    #map {
+        height: 600px;
+        width: 800px;
+        border-radius: 12px;
+        margin: 0 0 0 0;
+    }
+
+    .map-flex-wrapper {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 48px;
+        margin-top: 32px;
+    }
+
+    .map-weather-info {
+        font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+        font-size: 1.15rem;
+        color: #222;
+        min-width: 260px;
+        max-width: 320px;
+        margin-top: 32px;
+    }
+
+    .map-title {
+        font-family: 'Playfair Display', 'Georgia', serif;
+        font-size: 2.7rem;
+        color: #4d6532;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 32px;
+        margin-bottom: 0;
+    }
+</style>
+<h1 class="map-title">Map</h1>
+<div class="map-flex-wrapper">
+    <div class="map-weather-info" id="weatherInfo"></div>
+    <div id="map"></div>
+</div>
+<script src="{{url_for('static', filename='content/map_test.js')}}"></script>
+{% endblock %}

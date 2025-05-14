@@ -1,33 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Environmental News Portal</title>
-    <style>
-        .content {
-            text-align: center;
-            margin-top: 50px;
-        }
-        h1 {
-            color: #2c3e50;
-        }
-        p {
-            font-size: 18px;
-            color: #555;
-        }
-    </style>
-</head>
-<body>
+{% extends "layout.html" %}
 
-    {% extends "layout.html" %}
-    {% block content %}
-
-    <div class="content">
-        <h1>Welcome to the Environmental News Portal</h1>
-        <p>Stay updated with the latest environmental news.</p>
+{% block content %}
+<div class="dashboard-main-wrapper">
+    <div class="dashboard-header-row">
+        <h1 class="dashboard-title">Notification Dashboard</h1>
+        <a href="#" class="dashboard-manage-link">&#9881; Manage Notifications</a>
     </div>
-    {% endblock %}
-</body>
-</html>
-
+    <div class="dashboard-filter-row">
+        <form method="get" id="dashboard-sort-form">
+            <select class="dashboard-filter-select" name="sort"
+                onchange="document.getElementById('dashboard-sort-form').submit()">
+                <option value="recent">Recent</option>
+                <option value="oldest">Oldest</option>
+                <option value="title">A-Z</option>
+            </select>
+        </form>
+    </div>
+    <div class="dashboard-notifications-list">
+        {% if notifications %}
+        {% for note in notifications %}
+        <div class="dashboard-notification-card">
+            <div class="dashboard-notification-header">
+                <h2 class="dashboard-notification-title">{{ note['title'] }}</h2>
+            </div>
+            <div class="dashboard-notification-body">
+                <div class="dashboard-notification-snippet">{{ note['content'][:200] }}{% if note['content']|length >
+                    200 %}...{% endif %}</div>
+            </div>
+            <div class="dashboard-notification-footer">
+                <span class="dashboard-notification-meta">{{ note['date'] }}</span>
+                <a href="#" class="dashboard-dismiss-link">Dismiss</a>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No notifications yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -7,10 +7,10 @@
 </head>
 
 <body>
-    <header>
-        <nav>
+    <header class="main-header">
+        <div class="header-bar">
             <div class="logo">
-                <a href="{{ url_for('home') }}">Environmental News</a>
+                <a href="{{ url_for('home') }}" class="logo-text">grassroots.</a>
             </div>
             <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -25,6 +25,13 @@
                 <li><a href="{{ url_for('login') }}">Login</a></li>
                 <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
                 {% endif %}
+        </div>
+        </div>
+        <nav class="secondary-nav">
+            <ul>
+                <li><a href="{{ url_for('map_test') }}">map</a></li>
+                <li><a href="{{ url_for('forum') }}">forum</a></li>
+                <li><a href="{{ url_for('home') }}">dashboard</a></li>
             </ul>
         </nav>
     </header>

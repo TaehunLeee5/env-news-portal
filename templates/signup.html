@@ -1,34 +1,38 @@
 {% extends "layout.html" %}
 
-
 {% block content %}
-<div class="auth-container">
-    <h2>Sign Up</h2>
-    <form method="POST" action="{{ url_for('signup') }}" onsubmit="return validateSignupForm()" id="signupForm">
-        <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" placeholder="John Doe" oninput="this.setCustomValidity('')" required>
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="john.doe@mail.com" oninput="this.setCustomValidity('')" required>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" minlength=6 maxlength=20 oninput="this.setCustomValidity('')" required>
-        </div>
-
-        <div class="form-group">
-            <label for="confirm_password">Re-enter Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" minlength=6 maxlength=20 oninput="this.setCustomValidity('')" required>
-        </div>
-
-        <button type="submit">Sign Up</button>
-    </form>
-
-    <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+<div class="login-flex-wrapper">
+    <div class="login-container">
+        <h1 class="login-title">Sign Up</h1>
+        <p class="login-subtext">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+        <form method="POST" action="{{ url_for('signup') }}" onsubmit="return validateSignupForm()" id="signupForm"
+            class="login-form">
+            <div class="form-group">
+                <label for="name" class="login-label">Full name*</label>
+                <input type="text" id="name" name="name" oninput="this.setCustomValidity('')" required
+                    class="login-input">
+            </div>
+            <div class="form-group">
+                <label for="email" class="login-label">Email address*</label>
+                <input type="email" id="email" name="email" oninput="this.setCustomValidity('')" required
+                    class="login-input">
+            </div>
+            <div class="form-group">
+                <label for="password" class="login-label">Password*</label>
+                <input type="password" id="password" name="password" oninput="this.setCustomValidity('')" required
+                    class="login-input">
+            </div>
+            <div class="form-group">
+                <label for="confirm_password" class="login-label">Re-enter Password*</label>
+                <input type="password" id="confirm_password" name="confirm_password"
+                    oninput="this.setCustomValidity('')" required class="login-input">
+            </div>
+            <button type="submit" class="login-btn signup-btn">Sign Up</button>
+        </form>
+        <a href="#" class="google-login-btn signup-google-btn">
+            <span class="google-icon">&#xE943;</span> Sign Up with Google
+        </a>
+    </div>
 </div>
 <script src="{{url_for('static', filename='content/signup.js')}}"></script>
 {% endblock %}
