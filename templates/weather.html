@@ -15,7 +15,7 @@
                 left: 0;
                 z-index: 1;
             }
-            #weatherInfo {
+            #infoPanel {
                 position: absolute;
                 bottom: 20px;
                 left: 20px;
@@ -58,11 +58,11 @@
     <body>
         <div id="loadingMessage">Loading map...</div>
         <div id="map"></div>
-        <p id="weatherInfo"></p>    
-        <h2 id="activeAlertHeader">Active Alerts:</h2>
-        <div id="activeAlertInfo"></div>
-        <h2 id="pastAlerts">Past Alerts: </h2>
-        <div id="pastAlertInfo"></div>
+        <div id="infoPanel">
+            <p id="weatherInfo"></p>    
+            <h2 id="activeAlertHeader">Active Alerts:</h2>
+            <div id="activeAlertInfo"></div>
+        </div>
     </body>
     <script src="{{url_for('static', filename='content/weather.js')}}"></script>
 </html>

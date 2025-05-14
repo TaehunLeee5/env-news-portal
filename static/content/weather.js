@@ -36,11 +36,17 @@ navigator.geolocation.getCurrentPosition(
 
         map.on('click', onMapClick);
         */
+        
+        // Hide loading message after map is initialized
+        document.getElementById('loadingMessage').style.display = 'none';
 
         updateWeatherInfo(lat, lng);
     },
     (error) => {
         console.error("Error getting user location:", error);
+        // Hide loading message even if there's an error
+        document.getElementById('loadingMessage').style.display = 'none';
+        document.getElementById('weatherInfo').innerHTML = "Error getting your location. Please enable location services and refresh the page.";
     }
 );
 
@@ -53,12 +59,12 @@ async function updateWeatherInfo(lat, lon) {
 
   //get weather data from weather.gov
   await getData("weather", lat, lon).then(function(data) {
-    var weatherText = "The temperature in " + data.city + ", " + data.state + ", is currently " + data.temperature + "\u00B0F<br />"
-      + data.city + "'s Air Quality Index is currently " + data.aqi + "<br /><br />Weekly weather forecast for " + data.city + ":<br />";
+    let weatherText = `The temperature in ${data.city}, ${data.state}, is currently ${data.temperature}\u00B0F<br />
+      ${data.city}'s Air Quality Index is currently ${data.aqi}<br /><br />Weekly weather forecast for ${data.city}:<br />`;
 
-    for (const period of data.forecastWeekly) {
-        weatherText += period.name + ": " + period.shortForecast + ", " + period.temperature + "\u00B0F. Wind: " 
-          + period.windSpeed + " " + period.windDirection + "<br />";
+     for (const period of data.forecastWeekly) {
+        weatherText += `${period.name}: ${period.shortForecast}, ${period.temperature}\u00B0F. Wind: 
+          ${period.windSpeed} ${period.windDirection}<br />`;
     }
 
     document.getElementById('weatherInfo').innerHTML = weatherText;
@@ -90,7 +96,7 @@ async function updateWeatherInfo(lat, lon) {
       var alertInfo = data.features[i].properties;
       activeAlertHTML += `
         <a id="activeAlertLink${i}" href="javascript:displayAlertInfo(${i})">${alertInfo.headline}</a>
-        <br>
+        <br/><br/>
       `
     }
     document.getElementById("activeAlertInfo").insertAdjacentHTML("beforeend", activeAlertHTML);
