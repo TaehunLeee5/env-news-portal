@@ -70,9 +70,6 @@ def getAlertData(lat, lon):
     
     return data
 
-# possible future implementations: 
-# check if link is an actual zone link from weather.gov (link validation)
-# proper error message handling for when a req for a zone fails
 def getWeatherZoneGeometry(zones):
     data = []
 

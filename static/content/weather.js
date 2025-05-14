@@ -84,6 +84,7 @@ async function updateWeatherInfo(lat, lon) {
     document.getElementById("weatherInfo").textContent= "Failed to get weather data";
   });
 
+  //getting alert data from weather.gov
   await getData("alerts", lat, lon).then(function(data) {
     alertData = data;
     if (state != null && city != null)
@@ -125,11 +126,13 @@ async function displayAlertInfo(idx) {
   var alertInfo = alertData.features[idx];
   var descElem = document.getElementById("activeAlertContainer");
 
+  //clear existing alerts being displayed
   if (descElem != null)
     descElem.remove();
   if (alertRegionMapLayer != null)
     map.removeLayer(alertRegionMapLayer);
 
+  //read region coordinates
   var polygons = []
   if (alertInfo.geometry != null) {
     for (const pos of alertInfo.geometry.coordinates[0]) {
@@ -150,10 +153,12 @@ async function displayAlertInfo(idx) {
     })
   }
 
+  //draw alert regions
   alertRegionMapLayer = L.featureGroup(polygons).addTo(map);
   alertRegionMapLayer.bindPopup(`${alertInfo.properties.event}: ${alertInfo.properties.areaDesc}`); //polygon region label
   map.fitBounds(alertRegionMapLayer.getBounds());
 
+  //display alert description
   document.getElementById(`activeAlertLink${idx}`).insertAdjacentHTML("afterend", `
     <div id="activeAlertContainer">
       <h4> ${alertInfo.properties.event}:</h4>
