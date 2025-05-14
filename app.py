@@ -109,14 +109,22 @@ def logout():
 def post_article():
     return render_template('post_article.html')
 
-@app.route('/map_test', methods=['GET', 'POST'])
-def map_test():
+#NOTE: need to implement form input validation to prevent security risks
+@app.route('/weather', methods=['GET', 'POST'])
+def weather():
     if request.method == 'POST':
+        reqType = request.form.get('reqType')
         lat = request.form.get('lat')
         lon = request.form.get('lon')
-        return weather_service.getWeatherData(lat, lon)
+        zones = request.form.get('zones')
+        if reqType == 'weather':
+            return weather_service.getWeatherData(lat, lon)
+        elif reqType == 'alerts':
+            return weather_service.getAlertData(lat, lon)
+        elif reqType == 'zoneInfo':
+            return weather_service.getWeatherZoneGeometry(zones)
     
-    return render_template('map_test.html')
+    return render_template('weather.html')
 
 @app.route('/events', methods=['GET','POST'])
 def events():

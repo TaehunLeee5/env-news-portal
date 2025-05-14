@@ -9,6 +9,7 @@ var loading = true;
 var articleRetrievalSuccess = false;
 var articleData = null;
 
+LocalStorage.clear();
 if ((articleData = LocalStorage.getItem("articleData")) == null) {
     getNewsArticles(1).then(function(data) {
         articleData = data;
@@ -62,7 +63,6 @@ async function loadArticles(pageNumber, nArticles) {
 
     for (var i = 0; i < articlesToLoad; i++) {
         const article = articleData.articles[currentArticlesLoaded + i];
-
         listHtml += `
             <section class="news-card">
                 <section class="news-thumbnail">

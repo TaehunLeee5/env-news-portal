@@ -15,7 +15,7 @@
                 left: 0;
                 z-index: 1;
             }
-            #weatherInfo {
+            #infoPanel {
                 position: absolute;
                 bottom: 20px;
                 left: 20px;
@@ -49,10 +49,8 @@
             function loadLocalLeafletJs() {
                 document.write("<script src='{{url_for('static', filename='content/libs/leaflet/leaflet.js')}}'><\/script>");
             }
+            loadLocalLeafletCss();
         </script>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin="" onerror="loadLocalLeafletCss()"/>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin="" onerror="loadLocalLeafletJs()"></script>
@@ -60,7 +58,11 @@
     <body>
         <div id="loadingMessage">Loading map...</div>
         <div id="map"></div>
-        <div id="weatherInfo"></div>    
+        <div id="infoPanel">
+            <p id="weatherInfo"></p>    
+            <h2 id="activeAlertHeader">Active Alerts:</h2>
+            <div id="activeAlertInfo"></div>
+        </div>
     </body>
-    <script src="{{url_for('static', filename='content/map_test.js')}}"></script>
+    <script src="{{url_for('static', filename='content/weather.js')}}"></script>
 </html>

@@ -60,3 +60,26 @@ def getWeatherData(lat, lon):
             'pollutantInfo': {},
             'pollutantAqi': {'h': {'v': 'N/A'}}
         }
+
+def getAlertData(lat, lon):
+    data = {}
+    #alertInfo = requests.get("https://api.weather.gov/alerts/active?area=CA") #for testing purposes
+    alertInfo = requests.get("https://api.weather.gov/alerts/active?point=" + lat + "," + lon)
+    if alertInfo.ok:
+        data = alertInfo.content
+    
+    return data
+
+def getWeatherZoneGeometry(zones):
+    data = []
+
+    for zoneLink in zones.split(","):
+        zoneGeomData = requests.get(zoneLink)
+        if zoneGeomData.ok:
+            zoneGeomData = zoneGeomData.json()
+            zoneCoords = []
+            for coords in zoneGeomData['geometry']['coordinates'][0]:
+                zoneCoords.append(coords)
+            data.append(zoneCoords)
+
+    return data
