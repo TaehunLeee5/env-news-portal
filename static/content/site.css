@@ -404,30 +404,6 @@ button[type="submit"] {
     background: #b8d82a;
 }
 
-.google-login-btn,
-.signup-google-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #db4437;
-    color: #fff;
-    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
-    font-size: 1.13rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 5px;
-    padding: 12px 0;
-    width: 100%;
-    margin-top: 18px;
-    text-decoration: none;
-    transition: background 0.2s;
-}
-
-.google-login-btn:hover,
-.signup-google-btn:hover {
-    background: #b83528;
-}
-
 /* Flash messages */
 .flashes {
     margin-bottom: 20px;
@@ -550,7 +526,8 @@ footer {
     background: #b8d82a;
 }
 
-.google-login-btn {
+.google-login-btn,
+.signup-google-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -568,7 +545,8 @@ footer {
     transition: background 0.2s;
 }
 
-.google-login-btn:hover {
+.google-login-btn:hover,
+.signup-google-btn:hover {
     background: #b83528;
 }
 

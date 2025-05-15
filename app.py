@@ -111,10 +111,6 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/login/google')
-def login_google():
-    return "<h3>This would redirect to Google login (not implemented yet).</h3>"
-
 @app.route('/logout')
 def logout():
     session.clear()
