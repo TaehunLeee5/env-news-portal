@@ -1157,3 +1157,40 @@ footer {
 .forum-search-btn:hover {
     background: #b8d82a;
 }
+
+.image-drop-area {
+    border: 2px dashed #b8d82a;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    background: #f8fbe9;
+    color: #888;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.image-drop-area.dragover {
+    border-color: #4d6532;
+    background: #eaf7c2;
+    color: #35511c;
+}
+
+#image-drop-text {
+    font-size: 1.05rem;
+}
+
+#image-browse-link {
+    color: #4a90e2;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.forum-post-image img {
+    display: block;
+    margin: 0 auto 10px auto;
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 8px;
+    object-fit: cover;
+}

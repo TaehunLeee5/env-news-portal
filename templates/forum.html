@@ -45,6 +45,16 @@
                             {# Add more tags here if your data supports it #}
                         </div>
                     </div>
+                    {% if post['uploaded_image'] %}
+                    <div class="forum-post-image"><img
+                            src="{{ url_for('static', filename='uploads/' ~ post['uploaded_image']) }}" alt="Post image"
+                            style="max-width:100%;max-height:220px;border-radius:8px;margin-bottom:10px;object-fit:cover;">
+                    </div>
+                    {% elif post['image_url'] %}
+                    <div class="forum-post-image"><img src="{{ post['image_url'] }}" alt="Post image"
+                            style="max-width:100%;max-height:220px;border-radius:8px;margin-bottom:10px;object-fit:cover;">
+                    </div>
+                    {% endif %}
                     <div class="forum-post-body">
                         <div class="forum-post-snippet">{{ post['content'][:200] }}{% if post['content']|length > 200
                             %}...{% endif %}</div>
@@ -82,7 +92,7 @@
 <div id="create-post-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <h1 class="modal-title">Create Post</h1>
-        <form id="create-post-form" method="POST" action="{{ url_for('forum') }}">
+        <form id="create-post-form" method="POST" action="{{ url_for('forum') }}" enctype="multipart/form-data">
             <input type="hidden" name="zipcode" value="{{ zipcode }}">
             <label for="modal-title-input" class="modal-label">Title</label>
             <input type="text" id="modal-title-input" name="title" class="modal-input" required>
@@ -96,6 +106,15 @@
             <input type="hidden" name="category" id="modal-selected-tag" required>
             <label for="modal-body-input" class="modal-label">Body</label>
             <textarea id="modal-body-input" name="content" class="modal-textarea" required></textarea>
+            <label class="modal-label">Image (optional)</label>
+            <div id="image-drop-area" class="image-drop-area">
+                <input type="file" id="uploaded_image" name="uploaded_image" accept="image/*" style="display:none;">
+                <div id="image-drop-text">Drag & drop an image here, or <span id="image-browse-link">browse</span></div>
+                <img id="image-preview" src="#" alt="Image preview"
+                    style="display:none;max-width:100%;margin-top:10px;border-radius:8px;" />
+            </div>
+            <label for="image_url" class="modal-label">Or Image URL (optional)</label>
+            <input type="url" id="image_url" name="image_url" class="modal-input" placeholder="https://...">
             <button type="submit" class="modal-publish-btn">Publish</button>
             <button type="button" class="modal-cancel-btn" onclick="closeCreatePostModal()">Cancel</button>
         </form>
@@ -154,6 +173,45 @@
     function closeZipModal() {
         document.getElementById('zip-modal').style.display = 'none';
         document.body.style.overflow = '';
+    }
+    // Drag and drop for image upload
+    const dropArea = document.getElementById('image-drop-area');
+    const fileInput = document.getElementById('uploaded_image');
+    const browseLink = document.getElementById('image-browse-link');
+    const previewImg = document.getElementById('image-preview');
+    const dropText = document.getElementById('image-drop-text');
+    if (dropArea && fileInput && browseLink && previewImg && dropText) {
+        dropArea.addEventListener('click', () => fileInput.click());
+        browseLink.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+        dropArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('dragover');
+        });
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                fileInput.files = e.dataTransfer.files;
+                showImagePreview(fileInput.files[0]);
+            }
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (fileInput.files && fileInput.files[0]) {
+                showImagePreview(fileInput.files[0]);
+            }
+        });
+        function showImagePreview(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
     }
 </script>
 {% endblock %}
